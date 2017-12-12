@@ -18,6 +18,7 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: "at.woodstick.pimutdroid"
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 
@@ -45,6 +46,7 @@ android {
 
     defaultConfig {
         applicationId appId
+        testApplicationId "${appId}.test"
         minSdkVersion 17
         targetSdkVersion 22
         testInstrumentationRunner "org.catrobat.paintroid.test.utils.CustomAndroidJUnitRunner"
@@ -111,6 +113,71 @@ android {
     }
 }
 
+
+// Run mutation:
+// 1.
+// gradlew cleanMutation prepareMutation
+// 2.
+// gradlew mutateAllBuildOnly mutateAllAdb afterMutation
+//
+// Result on stdout and under build/mutation/result
+// Mutated class files under ${pimut.pitest.reportDir}
+//
+pimut {
+    pitest {
+        pitestVersion = "1.2.2"
+
+        mainSourceSets = [project.android.sourceSets.main]
+
+        // Not needed when project.group property is set
+//        targetClasses = ["at.woodstick.mysampleapplication.*"]
+
+        targetClasses = [
+                "org.catrobat.paintroid.MainActivity",
+        ]
+
+        targetTests = ["org.catrobat.paintroid.*"]
+
+        mutators = [
+                "INCREMENTS",
+                "VOID_METHOD_CALLS",
+                "RETURN_VALS",
+                "MATH",
+                "NEGATE_CONDITIONALS",
+                "INVERT_NEGS",
+                "CONDITIONALS_BOUNDARY",
+                "REMOVE_CONDITIONALS"
+        ]
+
+        exportLineCoverage = true
+
+        outputFormats = ["XML", "HTML"]
+
+        threads = 4
+
+        verbose = true
+
+        reportDir = "${project.reporting.baseDir.path}/pitest/custom"
+
+        maxMutationsPerClass = 5
+    }
+
+    instrumentationTestOptions {
+        targetTests {
+//            packages = [
+//                    "at.woodstick.mysampleapplication.espresso",
+//            ]
+            classes = [
+                "org.catrobat.paintroid.test.espresso.MainActivityIntegrationTest",
+            ]
+        }
+
+        targetMutants = [
+            "org.catrobat.paintroid.MainActivity",
+        ]
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -129,14 +196,16 @@ dependencies {
 
     pmd 'net.sourceforge.pmd:pmd:5.1.1'
     checkstyle 'com.puppycrawl.tools:checkstyle:7.6'
+
+    testCompile "junit:junit:4.12"
 }
 
 tasks.whenTaskAdded { task ->
     if (!project.hasProperty('jenkins') && task.name.startsWith('assembleDebugAndroidTest')) {
-        verifyAnimationScalePermissionGranted.shouldRunAfter adbGrantAnimationScalePermission
-
-        task.dependsOn adbGrantAnimationScalePermission
-        task.dependsOn verifyAnimationScalePermissionGranted
+//        verifyAnimationScalePermissionGranted.shouldRunAfter adbGrantAnimationScalePermission
+//
+//        task.dependsOn adbGrantAnimationScalePermission
+//        task.dependsOn verifyAnimationScalePermissionGranted
     }
 }
 

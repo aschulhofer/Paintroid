@@ -33,6 +33,7 @@ import org.catrobat.paintroid.test.utils.SystemAnimationsRule;
 import org.catrobat.paintroid.tools.ToolType;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -206,6 +207,7 @@ public class MainActivityIntegrationTest {
 	}
 
 	@Test
+	@Ignore
 	public void testSessionArtefactsChangeOrientation() {
 		openLayerMenu();
 		addNewLayer();
