@@ -22,6 +22,8 @@ apply plugin: 'jacoco-android'
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 
+apply plugin: "at.woodstick.pimutdroid"
+
 apply from: 'gradle/adb_tasks.gradle'
 apply from: 'gradle/code_quality_tasks.gradle'
 
@@ -39,6 +41,8 @@ if (project.hasProperty('independent')) {
     appId += '.independent_' + today.format('YYYYMMdd_HHmm')
     appName = property('independent') ?: 'Paint ' + today.format('MMdd HH:mm')
 }
+
+
 
 android {
     compileSdkVersion 25
@@ -102,6 +106,59 @@ android {
     }
 }
 
+
+pimut {
+    pitest {
+        mainSourceSets = [project.android.sourceSets.main]
+        targetTests = ["org.catrobat.paintroid.*"]
+
+        mutators = [
+            "INCREMENTS",
+            "VOID_METHOD_CALLS",
+            "RETURN_VALS",
+            "MATH",
+            "NEGATE_CONDITIONALS",
+            "INVERT_NEGS",
+            "CONDITIONALS_BOUNDARY",
+            "REMOVE_CONDITIONALS"
+        ]
+
+        exportLineCoverage = true
+        outputFormats = ["XML", "HTML"]
+        threads = 4
+        verbose = true
+        maxMutationsPerClass = 2
+    }
+
+    buildConfiguration {
+        env1 {
+            targetMutants = ["org.catrobat.paintroid.MainActivity"]
+        }
+    }
+
+    instrumentationTestOptions {
+        targetTests {
+//            packages = [
+//                    "org.catrobat.paintroid.espresso",
+//            ]
+            classes = [
+                    "org.catrobat.paintroid.test.espresso.MainActivityIntegrationTest",
+            ]
+        }
+
+        targetMutants = [
+                "org.catrobat.paintroid.MainActivity",
+        ]
+    }
+
+    apkAppOutputRootDir = "${project.buildDir}/outputs/apk"
+    apkTestOutputRootDir = "${project.buildDir}/outputs/apk"
+
+//    packageDir = project(":app").android.defaultConfig.applicationId.replaceAll("\\.", "/")
+//    mutantsDir = "${pitest.reportDir}/debug/$packageDir"
+//    outputDir = "${project.buildDir}/mutres"
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.4.0'
@@ -128,10 +185,10 @@ dependencies {
 
 tasks.whenTaskAdded { task ->
     if (!project.hasProperty('jenkins') && task.name.startsWith('assembleDebugAndroidTest')) {
-        verifyAnimationScalePermissionGranted.shouldRunAfter adbGrantAnimationScalePermission
-
-        task.dependsOn adbGrantAnimationScalePermission
-        task.dependsOn verifyAnimationScalePermissionGranted
+//        verifyAnimationScalePermissionGranted.shouldRunAfter adbGrantAnimationScalePermission
+//
+//        task.dependsOn adbGrantAnimationScalePermission
+//        task.dependsOn verifyAnimationScalePermissionGranted
     }
 }
 
