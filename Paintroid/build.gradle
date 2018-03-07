@@ -40,6 +40,8 @@ if (project.hasProperty('independent')) {
     appName = property('independent') ?: 'Paint ' + today.format('MMdd HH:mm')
 }
 
+apply plugin: 'at.woodstick.pimutdroid-pitest'
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.3'

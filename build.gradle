@@ -21,10 +21,21 @@
 buildscript {
     repositories {
         jcenter()
+//        mavenLocal()
+        maven {
+            url "https://maven.google.com"
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+//        classpath 'com.android.tools.build:gradle:2.3.3'
+
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
+
+//        classpath 'at.woodstick:gradle-pimutdroid-plugin:0.0.1'
+
+        classpath group: "pl.droidsonroids.gradle", name: "gradle-pitest-plugin", version: "0.1.5"
+        classpath files("Paintroid/mutationLibs/gradle-pimutdroid-plugin-0.0.1.jar")
     }
 }
 
