@@ -37,9 +37,9 @@ public final class Utils {
 	public static synchronized Point convertFromCanvasToScreen(Point canvasPoint, Perspective currentPerspective) {
 		Float surfaceCenterX = currentPerspective.surfaceCenterX;
 		Float surfaceScale = currentPerspective.surfaceScale;
-		Float surfaceTranslationX = currentPerspective.surfaceTranslationX;
+		Float surfaceTranslationX = currentPerspective.getSurfaceTranslationX();
 		Float surfaceCenterY = currentPerspective.surfaceCenterY;
-		Float surfaceTranslationY = currentPerspective.surfaceTranslationY;
+		Float surfaceTranslationY = currentPerspective.getSurfaceTranslationY();
 
 		Float mInitialTranslationY = currentPerspective.initialTranslationY;
 

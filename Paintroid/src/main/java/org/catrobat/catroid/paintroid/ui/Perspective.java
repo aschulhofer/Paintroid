@@ -34,11 +34,12 @@ public class Perspective implements Serializable {
 	public static final float MIN_SCALE = 0.1f;
 	public static final float MAX_SCALE = 100f;
 	public static final float SCROLL_BORDER = 50f;
+
 	private static final long serialVersionUID = 7742690846128292452L;
 	private static final float BORDER_ZOOM_FACTOR = 0.95f;
-	private static final float ACTION_BAR_HEIGHT = NavigationDrawerMenuActivity.ACTION_BAR_HEIGHT;
 
-	private final float screenDensity;
+	private final float actionbarHeight;
+
 	@VisibleForTesting
 	public float surfaceWidth;
 	@VisibleForTesting
@@ -49,20 +50,20 @@ public class Perspective implements Serializable {
 	public float surfaceCenterY;
 	@VisibleForTesting
 	public float surfaceScale;
-	@VisibleForTesting
-	public float surfaceTranslationX;
-	@VisibleForTesting
-	public float surfaceTranslationY;
+
+	private float surfaceTranslationX;
+	private float surfaceTranslationY;
 	private float bitmapWidth;
 	private float bitmapHeight;
 	private boolean isFullscreen;
+
 	private float initialTranslationX;
 	@VisibleForTesting
 	public float initialTranslationY;
 
-	public Perspective(SurfaceHolder holder, float screenDensity) {
+	public Perspective(SurfaceHolder holder, float actionbarHeight) {
 		setSurfaceHolder(holder);
-		this.screenDensity = screenDensity;
+		this.actionbarHeight = actionbarHeight;
 		surfaceScale = 1f;
 		isFullscreen = false;
 	}
@@ -71,14 +72,13 @@ public class Perspective implements Serializable {
 		Rect surfaceFrame = holder.getSurfaceFrame();
 		surfaceWidth = surfaceFrame.right;
 		surfaceCenterX = surfaceFrame.exactCenterX();
-		surfaceHeight = surfaceFrame.bottom; // - ACTION_BAR_HEIGHT * screenDensity;
+		surfaceHeight = surfaceFrame.bottom;
 		surfaceCenterY = surfaceFrame.exactCenterY();
 		resetScaleAndTranslation();
 	}
 
 	public synchronized void resetScaleAndTranslation() {
 
-		float actionbarHeight = ACTION_BAR_HEIGHT * screenDensity;
 		bitmapWidth = PaintroidApplication.drawingSurface.getBitmapWidth();
 		bitmapHeight = PaintroidApplication.drawingSurface.getBitmapHeight();
 		surfaceScale = 1f;
@@ -142,15 +142,6 @@ public class Perspective implements Serializable {
 		surfacePoint.set(canvasX, canvasY);
 	}
 
-	/**
-	 * @deprecated use {@link #getSurfacePointFromCanvasPoint} instead
-	 */
-	@Deprecated
-	public synchronized void convertFromCanvasToScreen(PointF p) {
-		p.x = ((p.x + surfaceTranslationX - surfaceCenterX) * surfaceScale + surfaceCenterX);
-		p.y = ((p.y + surfaceTranslationY - surfaceCenterY) * surfaceScale + surfaceCenterY);
-	}
-
 	public synchronized PointF getSurfacePointFromCanvasPoint(PointF canvasPoint) {
 
 		float surfaceX = (canvasPoint.x + surfaceTranslationX - surfaceCenterX)
@@ -159,14 +150,6 @@ public class Perspective implements Serializable {
 				* surfaceScale + surfaceCenterY;
 
 		return new PointF(surfaceX, surfaceY);
-	}
-
-	public synchronized void convertToSurfaceFromCanvas(PointF canvasPoint) {
-		float surfaceX = (canvasPoint.x + surfaceTranslationX - surfaceCenterX)
-				* surfaceScale + surfaceCenterX;
-		float surfaceY = (canvasPoint.y + surfaceTranslationY - surfaceCenterY)
-				* surfaceScale + surfaceCenterY;
-		canvasPoint.set(surfaceX, surfaceY);
 	}
 
 	public synchronized void applyToCanvas(Canvas canvas) {

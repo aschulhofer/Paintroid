@@ -136,7 +136,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		}
 		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
 		PaintroidApplication.drawingSurface = drawingSurface;
-		PaintroidApplication.perspective = new Perspective(drawingSurface.getHolder(), metrics.density);
+		PaintroidApplication.perspective = createPerspective(metrics.density);
 		bottomBar = new BottomBar(this);
 		topBar = new TopBar(this);
 		layerSideNav = (NavigationView) findViewById(R.id.nav_view_layer);
@@ -307,7 +307,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 
 		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
 		PaintroidApplication.drawingSurface = drawingSurface;
-		PaintroidApplication.perspective = new Perspective(drawingSurface.getHolder(), metrics.density);
+		PaintroidApplication.perspective = createPerspective(metrics.density);
 		bottomBar = new BottomBar(this);
 		topBar = new TopBar(this);
 		layerSideNav = (NavigationView) findViewById(R.id.nav_view_layer);
@@ -656,5 +656,9 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 
 	private void initLocaleConfiguration() {
 		MultilingualActivity.setToChosenLanguage(this);
+	}
+
+	private Perspective createPerspective(final float density) {
+		return new Perspective(drawingSurface.getHolder(), ACTION_BAR_HEIGHT * density);
 	}
 }

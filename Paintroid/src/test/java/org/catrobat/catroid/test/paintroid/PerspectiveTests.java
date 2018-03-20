@@ -42,7 +42,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PerspectiveTests {
 
+	private static final float ACTION_BAR_HEIGHT = 50f;
 	private static final float SCREEN_DENSITY = 2f;
+
 	private static final int SURFACE_WIDTH = 10;
 	private static final int SURFACE_HEIGHT = 100;
 	private static final float EXACT_CENTER_X = 5f;
@@ -67,7 +69,7 @@ public class PerspectiveTests {
 
 		PaintroidApplication.drawingSurface = mock(DrawingSurface.class);
 
-		perspective = new Perspective(holder, SCREEN_DENSITY);
+		perspective = new Perspective(holder, ACTION_BAR_HEIGHT * SCREEN_DENSITY);
 	}
 
 	@Test
@@ -98,7 +100,7 @@ public class PerspectiveTests {
 
 		InOrder inOrder = Mockito.inOrder(canvas);
 		inOrder.verify(canvas).scale(scale, scale, EXACT_CENTER_X, EXACT_CENTER_Y);
-		inOrder.verify(canvas).translate(perspective.surfaceTranslationX, perspective.surfaceTranslationY);
+		inOrder.verify(canvas).translate(perspective.getSurfaceTranslationX(), perspective.getSurfaceTranslationY());
 		inOrder.verifyNoMoreInteractions();
 	}
 
@@ -128,7 +130,7 @@ public class PerspectiveTests {
 
 		InOrder inOrder = Mockito.inOrder(canvas);
 		inOrder.verify(canvas).scale(scale, scale, EXACT_CENTER_X, EXACT_CENTER_Y);
-		inOrder.verify(canvas).translate(perspective.surfaceTranslationX, perspective.surfaceTranslationY);
+		inOrder.verify(canvas).translate(perspective.getSurfaceTranslationX(), perspective.getSurfaceTranslationY());
 		inOrder.verifyNoMoreInteractions();
 	}
 
