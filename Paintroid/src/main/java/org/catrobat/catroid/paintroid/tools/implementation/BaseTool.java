@@ -58,6 +58,7 @@ import org.catrobat.catroid.paintroid.listener.BrushPickerView.OnBrushChangedLis
 import org.catrobat.catroid.paintroid.tools.Tool;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.ui.DrawingSurface;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -96,6 +97,8 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 	LinearLayout toolSpecificOptionsLayout;
 	PointF previousEventCoordinate;
 	private LinearLayout toolOptionsLayout;
+
+	protected Perspective perspective;
 
 	public BaseTool(Context context, ToolType toolType) {
 		super();
@@ -138,6 +141,11 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 		toolOptionsLayout = (LinearLayout) ((Activity) context).findViewById(R.id.layout_tool_options);
 		toolSpecificOptionsLayout = (LinearLayout) ((Activity) context).findViewById(R.id.layout_tool_specific_options);
 		resetAndInitializeToolOptions();
+	}
+
+	@Override
+	public void setPerspective(Perspective perspective) {
+		this.perspective = perspective;
 	}
 
 	@Override
@@ -287,7 +295,7 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 
 		if (toolOptionsShown) {
 			if (motionEventType == MotionEvent.ACTION_UP) {
-				PointF surfacePoint = PaintroidApplication.perspective.getSurfacePointFromCanvasPoint(coordinate);
+				PointF surfacePoint = perspective.getSurfacePointFromCanvasPoint(coordinate);
 				float toolOptionsOnSurfaceY = ((Activity) context).findViewById(R.id.main_tool_options).getY()
 						- ((Activity) context).findViewById(R.id.toolbar).getHeight();
 				if (surfacePoint.y < toolOptionsOnSurfaceY) {

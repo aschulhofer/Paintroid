@@ -74,13 +74,13 @@ public class Perspective implements Serializable {
 		surfaceCenterX = surfaceFrame.exactCenterX();
 		surfaceHeight = surfaceFrame.bottom;
 		surfaceCenterY = surfaceFrame.exactCenterY();
-		resetScaleAndTranslation();
 	}
 
-	public synchronized void resetScaleAndTranslation() {
+	public synchronized void resetScaleAndTranslation(float bitmapWidth, float bitmapHeight) {
 
-		bitmapWidth = PaintroidApplication.drawingSurface.getBitmapWidth();
-		bitmapHeight = PaintroidApplication.drawingSurface.getBitmapHeight();
+		this.bitmapWidth = bitmapWidth;
+		this.bitmapHeight = bitmapHeight;
+
 		surfaceScale = 1f;
 
 		if (surfaceWidth == 0 || surfaceHeight == 0) {
@@ -194,7 +194,6 @@ public class Perspective implements Serializable {
 
 	public void setFullscreen(boolean isFullscreen) {
 		this.isFullscreen = isFullscreen;
-		resetScaleAndTranslation();
 	}
 
 	public float getSurfaceTranslationX() {

@@ -26,6 +26,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Bundle;
 
+import org.catrobat.catroid.paintroid.ui.Perspective;
+
 public interface Tool {
 
 	boolean handleDown(PointF coordinate);
@@ -70,6 +72,8 @@ public interface Tool {
 	void startTool();
 
 	void leaveTool();
+
+	void setPerspective(Perspective perspective);
 
 	enum StateChange {
 		ALL, RESET_INTERNAL_STATE, NEW_IMAGE_LOADED, MOVE_CANCELED

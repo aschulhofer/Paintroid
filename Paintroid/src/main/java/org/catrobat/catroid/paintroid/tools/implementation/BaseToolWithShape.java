@@ -70,8 +70,7 @@ public abstract class BaseToolWithShape extends BaseTool implements
 	public abstract void drawShape(Canvas canvas);
 
 	float getStrokeWidthForZoom(float defaultStrokeWidth, float minStrokeWidth, float maxStrokeWidth) {
-		float strokeWidth = (defaultStrokeWidth * metrics.density)
-				/ PaintroidApplication.perspective.getScale();
+		float strokeWidth = (defaultStrokeWidth * metrics.density) / PaintroidApplication.perspective.getScale();
 		return Math.min(maxStrokeWidth, Math.max(minStrokeWidth, strokeWidth));
 	}
 
@@ -102,9 +101,7 @@ public abstract class BaseToolWithShape extends BaseTool implements
 
 		int deltaX = 0;
 		int deltaY = 0;
-		PointF surfaceToolPosition = PaintroidApplication.perspective
-				.getSurfacePointFromCanvasPoint(new PointF(toolPosition.x,
-						toolPosition.y));
+		PointF surfaceToolPosition = perspective.getSurfacePointFromCanvasPoint(new PointF(toolPosition.x, toolPosition.y));
 
 		if (surfaceToolPosition.x < scrollTolerance) {
 			deltaX = 1;

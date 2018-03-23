@@ -81,7 +81,10 @@ public class RotateCommand extends BaseCommand {
 
 		setChanged();
 
-		PaintroidApplication.perspective.resetScaleAndTranslation();
+		PaintroidApplication.perspective.resetScaleAndTranslation(
+			PaintroidApplication.drawingSurface.getBitmapWidth(),
+			PaintroidApplication.drawingSurface.getBitmapHeight()
+		);
 		notifyStatus(NotifyStates.COMMAND_DONE);
 	}
 

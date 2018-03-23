@@ -36,6 +36,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
+import android.view.SurfaceHolder;
 import android.widget.Toast;
 
 import org.catrobat.catroid.paintroid.command.Command;
@@ -48,6 +49,8 @@ import org.catrobat.catroid.paintroid.dialog.InfoDialog.DialogType;
 import org.catrobat.catroid.paintroid.listener.LayerListener;
 import org.catrobat.catroid.paintroid.tools.Tool.StateChange;
 import org.catrobat.catroid.paintroid.tools.implementation.ImportTool;
+import org.catrobat.catroid.paintroid.ui.DrawingSurface;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.paintroid.ui.ToastFactory;
 
 import java.io.File;
@@ -84,6 +87,20 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 	public boolean saveCopy = false;
 	@VisibleForTesting
 	public boolean openedFromCatroid;
+
+	protected Perspective perspective;
+
+	protected void initPerspective(final SurfaceHolder holder, final float density) {
+		perspective = createPerspective(holder, density);
+	}
+
+	protected Perspective createPerspective(final SurfaceHolder holder, final float density) {
+		return new Perspective(holder, ACTION_BAR_HEIGHT * density);
+	}
+
+	public Perspective getPerspective() {
+		return perspective;
+	}
 
 	boolean imageHasBeenModified() {
 		return (!(LayerListener.getInstance().getAdapter().getLayers().size() == 1)
@@ -222,9 +239,8 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 					return;
 			}
 
-			isPlainImage = false;
-			isSaved = false;
-			savedPictureUri = null;
+			resetBitmapInfoState(false);
+
 			LayerListener.getInstance().getCurrentLayer().setImage(PaintroidApplication.drawingSurface.getBitmapCopy());
 			LayerListener.getInstance().refreshView();
 		}
@@ -325,14 +341,25 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 		Log.d("PAINTROID - MFA", "init new bitmap with: w: " + size.x + " h:" + size.y);
 		Bitmap bitmap = Bitmap.createBitmap(size.x, size.y, Config.ARGB_8888);
 		bitmap.eraseColor(Color.TRANSPARENT);
+
 		PaintroidApplication.drawingSurface.resetBitmap(bitmap);
-		PaintroidApplication.perspective.resetScaleAndTranslation();
-		PaintroidApplication.currentTool
-				.resetInternalState(StateChange.NEW_IMAGE_LOADED);
-		isPlainImage = true;
+
+		perspective.resetScaleAndTranslation(
+			PaintroidApplication.drawingSurface.getBitmapWidth(),
+			PaintroidApplication.drawingSurface.getBitmapHeight()
+		);
+
+		PaintroidApplication.currentTool.resetInternalState(StateChange.NEW_IMAGE_LOADED);
+
+		resetBitmapInfoState(true);
+
+		PaintroidApplication.drawingSurface.refreshDrawingSurface();
+	}
+
+	protected void resetBitmapInfoState(boolean isPlainImage) {
+		this.isPlainImage = isPlainImage;
 		isSaved = false;
 		savedPictureUri = null;
-		PaintroidApplication.drawingSurface.refreshDrawingSurface();
 	}
 
 	abstract class RunnableWithBitmap {

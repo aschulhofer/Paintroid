@@ -63,9 +63,10 @@ public class DrawingSurfaceListener implements OnTouchListener {
 	@Override
 	public boolean onTouch(View view, MotionEvent event) {
 		DrawingSurface drawingSurface = (DrawingSurface) view;
-		Perspective perspective = PaintroidApplication.perspective;
-		PointF touchPoint = perspective
-				.getCanvasPointFromSurfacePoint(new PointF(event.getX(), event.getY()));
+
+		Perspective perspective = drawingSurface.getPerspective();
+		PointF touchPoint = perspective.getCanvasPointFromSurfacePoint(new PointF(event.getX(), event.getY()));
+
 		if (drawingSurface.getLock()) {
 			touchMode = TouchMode.LOCK;
 		}
@@ -74,6 +75,7 @@ public class DrawingSurfaceListener implements OnTouchListener {
 				PaintroidApplication.currentTool.handleTouch(touchPoint, MotionEvent.ACTION_DOWN);
 
 				moveThread = new MoveThread();
+				moveThread.setPerspective(perspective);
 				moveThread.setCalculationVariables(event.getX(), event.getY(),
 						view.getWidth(), view.getHeight());
 				moveThread.start();
@@ -149,6 +151,8 @@ public class DrawingSurfaceListener implements OnTouchListener {
 
 		private static final int SCROLL_INTERVAL_FACTOR = 8;
 
+		private Perspective perspective;
+
 		private int step = 1;
 
 		private boolean running;
@@ -167,6 +171,10 @@ public class DrawingSurfaceListener implements OnTouchListener {
 			running = !ignoredTools.contains(PaintroidApplication.currentTool
 					.getToolType());
 			scrolling = false;
+		}
+
+		public void setPerspective(Perspective perspective) {
+			this.perspective = perspective;
 		}
 
 		void setCalculationVariables(float pointX, float pointY, int width, int height) {
@@ -204,19 +212,18 @@ public class DrawingSurfaceListener implements OnTouchListener {
 					scrolling = true;
 
 					newMovePoint.set(pointX, pointY);
-					PaintroidApplication.perspective.convertToCanvasFromSurface(newMovePoint);
+					perspective.convertToCanvasFromSurface(newMovePoint);
 
 					if (PaintroidApplication.drawingSurface.isPointOnCanvas(newMovePoint)) {
 
-						PaintroidApplication.perspective.translate(autoScrollDirection.x * step,
-								autoScrollDirection.y * step);
+						perspective.translate(autoScrollDirection.x * step,autoScrollDirection.y * step);
 
 						PaintroidApplication.currentTool.handleMove(newMovePoint);
 					}
 				}
 
 				try {
-					sleep(calculateScrollInterval(PaintroidApplication.perspective.getScale()));
+					sleep(calculateScrollInterval(perspective.getScale()));
 				} catch (InterruptedException e) {
 					Log.e(DrawingSurfaceListener.class.getSimpleName(), e.getMessage());
 				}

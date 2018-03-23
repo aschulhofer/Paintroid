@@ -33,6 +33,7 @@ import org.catrobat.catroid.paintroid.dialog.IndeterminateProgressDialog;
 import org.catrobat.catroid.paintroid.listener.LayerListener;
 import org.catrobat.catroid.paintroid.tools.Layer;
 import org.catrobat.catroid.paintroid.tools.Tool;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,8 @@ import java.util.List;
 public final class UndoRedoManager {
 
 	private static UndoRedoManager instance;
+
+	private Perspective perspective;
 
 	private UndoRedoManager() {
 	}
@@ -49,6 +52,11 @@ public final class UndoRedoManager {
 			instance = new UndoRedoManager();
 		}
 		return instance;
+	}
+
+	public UndoRedoManager withPerspective(Perspective perspective) {
+		this.perspective = perspective;
+		return this;
 	}
 
 	private static void undoResizeCommand(Layer undoLayer, ResizeCommand undoCommand) {
@@ -194,9 +202,9 @@ public final class UndoRedoManager {
 			LayerCommand layerCommand = new LayerCommand(layer);
 			final LayerBitmapCommand layerBitmapCommand = commandManager.getLayerBitmapCommand(layerCommand);
 
-			final float scale = PaintroidApplication.perspective.getScale();
-			final float surfaceTranslationX = PaintroidApplication.perspective.getSurfaceTranslationX();
-			final float surfaceTranslationY = PaintroidApplication.perspective.getSurfaceTranslationY();
+			final float scale = perspective.getScale();
+			final float surfaceTranslationX = perspective.getSurfaceTranslationX();
+			final float surfaceTranslationY = perspective.getSurfaceTranslationY();
 
 			if (commandManager.getLayerOperationsCommandList().size() <= 1
 					&& layerBitmapCommand.getLayerCommands().size() <= 1) {
@@ -273,9 +281,9 @@ public final class UndoRedoManager {
 					PaintroidApplication.currentTool.resetInternalState(Tool.StateChange.RESET_INTERNAL_STATE);
 					update();
 
-					PaintroidApplication.perspective.setScale(scale);
-					PaintroidApplication.perspective.setSurfaceTranslationX(surfaceTranslationX);
-					PaintroidApplication.perspective.setSurfaceTranslationY(surfaceTranslationY);
+					perspective.setScale(scale);
+					perspective.setSurfaceTranslationX(surfaceTranslationX);
+					perspective.setSurfaceTranslationY(surfaceTranslationY);
 
 					LayerListener.getInstance().refreshView();
 					PaintroidApplication.drawingSurface.refreshDrawingSurface();
@@ -292,9 +300,9 @@ public final class UndoRedoManager {
 		final CommandManager commandManager = PaintroidApplication.commandManager;
 		LayerBitmapCommand layerBitmapCommand = commandManager.getLayerBitmapCommand(layerCommand);
 
-		final float scale = PaintroidApplication.perspective.getScale();
-		final float surfaceTranslationX = PaintroidApplication.perspective.getSurfaceTranslationX();
-		final float surfaceTranslationY = PaintroidApplication.perspective.getSurfaceTranslationY();
+		final float scale = perspective.getScale();
+		final float surfaceTranslationX = perspective.getSurfaceTranslationX();
+		final float surfaceTranslationY = perspective.getSurfaceTranslationY();
 
 		if (commandManager.getLayerOperationsUndoCommandList().size() == 0
 				&& layerBitmapCommand.getLayerUndoCommands().size() == 0) {
@@ -372,9 +380,9 @@ public final class UndoRedoManager {
 				PaintroidApplication.currentTool.resetInternalState(Tool.StateChange.RESET_INTERNAL_STATE);
 				update();
 
-				PaintroidApplication.perspective.setScale(scale);
-				PaintroidApplication.perspective.setSurfaceTranslationX(surfaceTranslationX);
-				PaintroidApplication.perspective.setSurfaceTranslationY(surfaceTranslationY);
+				perspective.setScale(scale);
+				perspective.setSurfaceTranslationX(surfaceTranslationX);
+				perspective.setSurfaceTranslationY(surfaceTranslationY);
 
 				LayerListener.getInstance().refreshView();
 				PaintroidApplication.drawingSurface.refreshDrawingSurface();

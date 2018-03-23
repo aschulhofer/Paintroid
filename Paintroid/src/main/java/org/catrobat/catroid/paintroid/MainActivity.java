@@ -71,7 +71,6 @@ import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.ImportTool;
 import org.catrobat.catroid.paintroid.ui.BottomBar;
 import org.catrobat.catroid.paintroid.ui.DrawingSurface;
-import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.paintroid.ui.TopBar;
 import org.catrobat.catroid.paintroid.ui.button.LayersAdapter;
 
@@ -98,6 +97,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 	private Bundle toolBundle = new Bundle();
 
 	DrawingSurface drawingSurface;
+	UndoRedoManager undoRedoManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -120,8 +120,9 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 			tempPicturePath = extras.getString(PAINTROID_PICTURE_PATH);
 			Log.d(TAG, "catroidPicturePath: " + tempPicturePath);
 		}
-		if (tempPicturePath != null) {
-			openedFromCatroid = true;
+
+		openedFromCatroid = (tempPicturePath != null);
+		if(openedFromCatroid) {
 			if (!tempPicturePath.equals("")) {
 				catroidPicturePath = tempPicturePath;
 				scaleImage = false;
@@ -131,12 +132,10 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 				supportActionBar.setDisplayHomeAsUpEnabled(true);
 				supportActionBar.setDisplayShowHomeEnabled(true);
 			}
-		} else {
-			openedFromCatroid = false;
 		}
-		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
-		PaintroidApplication.drawingSurface = drawingSurface;
-		PaintroidApplication.perspective = createPerspective(metrics.density);
+
+		initDrawingSurfaceAndPerspective(metrics.density);
+
 		bottomBar = new BottomBar(this);
 		topBar = new TopBar(this);
 		layerSideNav = (NavigationView) findViewById(R.id.nav_view_layer);
@@ -195,7 +194,8 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		commandManager.commitAddLayerCommand(
 				new LayerCommand(LayerListener.getInstance().getAdapter().getLayer(0)));
 
-		UndoRedoManager.getInstance().update();
+		undoRedoManager = UndoRedoManager.getInstance().withPerspective(perspective);
+		undoRedoManager.update();
 
 		commandManager.setInitialized(true);
 	}
@@ -305,9 +305,8 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		hideKeyboard();
 
-		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
-		PaintroidApplication.drawingSurface = drawingSurface;
-		PaintroidApplication.perspective = createPerspective(metrics.density);
+		initDrawingSurfaceAndPerspective(metrics.density);
+
 		bottomBar = new BottomBar(this);
 		topBar = new TopBar(this);
 		layerSideNav = (NavigationView) findViewById(R.id.nav_view_layer);
@@ -317,7 +316,9 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		ColorPickerDialog.getInstance().setInitialColor(colorPickerBackgroundColor);
 
 		drawingSurface.resetBitmap(LayerListener.getInstance().getCurrentLayer().getImage());
-		PaintroidApplication.perspective.resetScaleAndTranslation();
+
+		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
+
 		PaintroidApplication.currentTool.resetInternalState(Tool.StateChange.NEW_IMAGE_LOADED);
 
 		LayerListener.init(this, layerSideNav, drawingSurface.getBitmapCopy(), true);
@@ -325,9 +326,8 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		initKeyboardIsShownListener();
 		setFullScreen(false);
 
-		PaintroidApplication.commandManager
-				.setUpdateTopBarListener(topBar);
-		UndoRedoManager.getInstance().update();
+		PaintroidApplication.commandManager.setUpdateTopBarListener(topBar);
+		undoRedoManager.update();
 	}
 
 	@Override
@@ -413,7 +413,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		switch (requestCode) {
 			case REQUEST_CODE_IMPORTPNG:
 				Uri selectedGalleryImageUri = data.getData();
-				Tool tool = ToolFactory.createTool(this, ToolType.IMPORTPNG);
+				Tool tool = ToolFactory.createTool(this, ToolType.IMPORTPNG, perspective);
 				switchTool(tool);
 
 				loadBitmapFromUriAndRun(selectedGalleryImageUri,
@@ -444,13 +444,6 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		}
 	}
 
-	private void importPng() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("image/*");
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-		startActivityForResult(intent, REQUEST_CODE_IMPORTPNG);
-	}
-
 	public synchronized void switchTool(ToolType changeToToolType) {
 
 		switch (changeToToolType) {
@@ -458,13 +451,20 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 				importPng();
 				break;
 			default:
-				Tool tool = ToolFactory.createTool(this, changeToToolType);
+				Tool tool = ToolFactory.createTool(this, changeToToolType, perspective);
 				switchTool(tool);
 				break;
 		}
 	}
 
-	public synchronized void switchTool(Tool tool) {
+	private void importPng() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("image/*");
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		startActivityForResult(intent, REQUEST_CODE_IMPORTPNG);
+	}
+
+	private synchronized void switchTool(Tool tool) {
 		if (tool == null) {
 			return;
 		}
@@ -567,7 +567,8 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 
 	private void setFullScreen(boolean isFullScreen) {
 
-		PaintroidApplication.perspective.setFullscreen(isFullScreen);
+		perspective.setFullscreen(isFullScreen);
+		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
 
 		NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 		mNavigationView.setNavigationItemSelectedListener(this);
@@ -618,7 +619,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 			mNavigationView.getMenu().removeItem(R.id.nav_save_duplicate);
 		}
 
-		if (PaintroidApplication.perspective.getFullscreen()) {
+		if (perspective.getFullscreen()) {
 			mNavigationView.getMenu().findItem(R.id.nav_fullscreen_mode).setVisible(false);
 		} else {
 			mNavigationView.getMenu().findItem(R.id.nav_exit_fullscreen_mode).setVisible(false);
@@ -658,7 +659,14 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		MultilingualActivity.setToChosenLanguage(this);
 	}
 
-	private Perspective createPerspective(final float density) {
-		return new Perspective(drawingSurface.getHolder(), ACTION_BAR_HEIGHT * density);
+	protected void initDrawingSurfaceAndPerspective(final float density) {
+		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
+
+		initPerspective(drawingSurface.getHolder(), density);
+		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
+		drawingSurface.withPerspective(perspective);
+
+		PaintroidApplication.drawingSurface = drawingSurface;
+		PaintroidApplication.perspective = perspective;
 	}
 }

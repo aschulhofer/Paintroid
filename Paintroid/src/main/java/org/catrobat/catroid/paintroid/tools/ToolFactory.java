@@ -32,13 +32,14 @@ import org.catrobat.catroid.paintroid.tools.implementation.PipetteTool;
 import org.catrobat.catroid.paintroid.tools.implementation.StampTool;
 import org.catrobat.catroid.paintroid.tools.implementation.TextTool;
 import org.catrobat.catroid.paintroid.tools.implementation.TransformTool;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 
 public final class ToolFactory {
 
 	private ToolFactory() {
 	}
 
-	public static Tool createTool(Activity context, ToolType toolType) {
+	public static Tool createTool(Activity context, ToolType toolType, Perspective perspective) {
 		Tool tool;
 		switch (toolType) {
 			case BRUSH:
@@ -78,6 +79,7 @@ public final class ToolFactory {
 				tool = new DrawTool(context, ToolType.BRUSH);
 				break;
 		}
+		tool.setPerspective(perspective);
 		tool.setupToolOptions();
 		return tool;
 	}

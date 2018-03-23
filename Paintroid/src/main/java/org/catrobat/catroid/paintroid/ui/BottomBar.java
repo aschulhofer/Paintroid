@@ -68,14 +68,14 @@ public class BottomBar implements View.OnClickListener, View.OnLongClickListener
 		Bundle bundle = new Bundle();
 		if (PaintroidApplication.currentTool == null) {
 			currentToolType = ToolType.BRUSH;
-			PaintroidApplication.currentTool = ToolFactory.createTool(mainActivity, currentToolType);
+			PaintroidApplication.currentTool = ToolFactory.createTool(mainActivity, currentToolType, mainActivity.getPerspective());
 			PaintroidApplication.currentTool.startTool();
 		} else {
 			currentToolType = PaintroidApplication.currentTool.getToolType();
 			Paint paint = PaintroidApplication.currentTool.getDrawPaint();
 			PaintroidApplication.currentTool.leaveTool();
 			PaintroidApplication.currentTool.onSaveInstanceState(bundle);
-			PaintroidApplication.currentTool = ToolFactory.createTool(mainActivity, currentToolType);
+			PaintroidApplication.currentTool = ToolFactory.createTool(mainActivity, currentToolType, mainActivity.getPerspective());
 			PaintroidApplication.currentTool.onRestoreInstanceState(bundle);
 			PaintroidApplication.currentTool.startTool();
 			PaintroidApplication.currentTool.setDrawPaint(paint);

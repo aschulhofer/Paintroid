@@ -48,8 +48,7 @@ import org.catrobat.catroid.paintroid.tools.Layer;
 
 import java.util.ArrayList;
 
-public class DrawingSurface extends SurfaceView implements
-		SurfaceHolder.Callback {
+public class DrawingSurface extends SurfaceView implements SurfaceHolder.Callback {
 	protected static final String BUNDLE_INSTANCE_STATE = "BUNDLE_INSTANCE_STATE";
 	protected static final String BUNDLE_PERSPECTIVE = "BUNDLE_PERSPECTIVE";
 	protected static final String BUNDLE_WORKING_BITMAP = "BUNDLE_WORKING_BITMAP";
@@ -71,6 +70,8 @@ public class DrawingSurface extends SurfaceView implements
 	private boolean drawingSurfaceDirtyFlag = false;
 	private DrawingSurfaceListener drawingSurfaceListener;
 
+	private Perspective perspective;
+
 	public DrawingSurface(Context context, AttributeSet attrSet) {
 		super(context, attrSet);
 		init();
@@ -79,6 +80,15 @@ public class DrawingSurface extends SurfaceView implements
 	public DrawingSurface(Context context) {
 		super(context);
 		init();
+	}
+
+	public DrawingSurface withPerspective(Perspective perspective) {
+		this.perspective = perspective;
+		return this;
+	}
+
+	public Perspective getPerspective() {
+		return perspective;
 	}
 
 	public boolean getLock() {
@@ -108,7 +118,7 @@ public class DrawingSurface extends SurfaceView implements
 				return;
 			}
 
-			PaintroidApplication.perspective.applyToCanvas(surfaceViewCanvas);
+			perspective.applyToCanvas(surfaceViewCanvas);
 			surfaceViewCanvas.save();
 			surfaceViewCanvas.clipRect(workingBitmapRect, Region.Op.DIFFERENCE);
 			surfaceViewCanvas.drawColor(BACKGROUND_COLOR);
@@ -181,7 +191,7 @@ public class DrawingSurface extends SurfaceView implements
 		Bundle bundle = new Bundle();
 		bundle.putParcelable(BUNDLE_INSTANCE_STATE, super.onSaveInstanceState());
 		bundle.putParcelable(BUNDLE_WORKING_BITMAP, workingBitmap);
-		bundle.putSerializable(BUNDLE_PERSPECTIVE, PaintroidApplication.perspective);
+		bundle.putSerializable(BUNDLE_PERSPECTIVE, perspective);
 		return bundle;
 	}
 
@@ -189,19 +199,19 @@ public class DrawingSurface extends SurfaceView implements
 	public void onRestoreInstanceState(Parcelable state) {
 		if (state instanceof Bundle) {
 			Bundle bundle = (Bundle) state;
-			PaintroidApplication.perspective = (Perspective) bundle
-					.getSerializable(BUNDLE_PERSPECTIVE);
+
+			perspective = (Perspective) bundle .getSerializable(BUNDLE_PERSPECTIVE);
+
 			resetBitmap((Bitmap) bundle.getParcelable(BUNDLE_WORKING_BITMAP));
 
-			super.onRestoreInstanceState(bundle
-					.getParcelable(BUNDLE_INSTANCE_STATE));
+			super.onRestoreInstanceState(bundle.getParcelable(BUNDLE_INSTANCE_STATE));
 		} else {
 			super.onRestoreInstanceState(state);
 		}
 	}
 
 	public synchronized void resetBitmap(Bitmap bitmap) {
-		PaintroidApplication.perspective.resetScaleAndTranslation();
+		perspective.resetScaleAndTranslation(getBitmapWidth(), getBitmapHeight());
 		setBitmap(bitmap);
 
 		if (surfaceCanBeUsed) {
@@ -241,7 +251,8 @@ public class DrawingSurface extends SurfaceView implements
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		surfaceCanBeUsed = true;
-		PaintroidApplication.perspective.setSurfaceHolder(holder);
+		perspective.setSurfaceHolder(holder);
+		perspective.resetScaleAndTranslation(getBitmapWidth(), getBitmapHeight());
 
 		if (workingBitmap != null && drawingThread != null) {
 			drawingThread.start();

@@ -206,7 +206,12 @@ public class TransformTool extends BaseToolWithRectangleShape {
 	}
 
 	private void resetScaleAndTranslation() {
-		PaintroidApplication.perspective.resetScaleAndTranslation();
+
+		PaintroidApplication.perspective.resetScaleAndTranslation(
+			PaintroidApplication.drawingSurface.getBitmapWidth(),
+			PaintroidApplication.drawingSurface.getBitmapHeight()
+		);
+
 		float zoomFactor = PaintroidApplication.perspective
 				.getScaleForCenterBitmap() * START_ZOOM_FACTOR;
 		PaintroidApplication.perspective.setScale(zoomFactor);
