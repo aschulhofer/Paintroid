@@ -61,12 +61,17 @@ public class StampTool extends BaseToolWithRectangleShape {
 
 	public StampTool(Context context, ToolType toolType) {
 		super(context, toolType);
+	}
+
+	@Override
+	public void init() {
+		super.init();
+
 		readyForPaste = false;
 		setRotationEnabled(ROTATION_ENABLED);
 		setRespectImageBounds(RESPECT_IMAGE_BOUNDS);
 
-		setBitmap(Bitmap.createBitmap((int) boxWidth, (int) boxHeight,
-				Config.ARGB_8888));
+		setBitmap(Bitmap.createBitmap((int) boxWidth, (int) boxHeight, Config.ARGB_8888));
 
 		createAndSetBitmapAsync = new CreateAndSetBitmapAsyncTask();
 		createOverlayBitmap();

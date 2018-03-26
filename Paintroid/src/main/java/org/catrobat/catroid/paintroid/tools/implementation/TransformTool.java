@@ -83,6 +83,11 @@ public class TransformTool extends BaseToolWithRectangleShape {
 		setRespectImageBounds(RESPECT_IMAGE_BORDERS);
 		setResizePointsVisible(RESIZE_POINTS_VISIBLE);
 		setRespectMaximumBorderRatio(RESPECT_MAXIMUM_BORDER_RATIO);
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		final DrawingSurface drawingSurface = PaintroidApplication.drawingSurface;
 
@@ -206,15 +211,9 @@ public class TransformTool extends BaseToolWithRectangleShape {
 	}
 
 	private void resetScaleAndTranslation() {
-
-		PaintroidApplication.perspective.resetScaleAndTranslation(
-			PaintroidApplication.drawingSurface.getBitmapWidth(),
-			PaintroidApplication.drawingSurface.getBitmapHeight()
-		);
-
-		float zoomFactor = PaintroidApplication.perspective
-				.getScaleForCenterBitmap() * START_ZOOM_FACTOR;
-		PaintroidApplication.perspective.setScale(zoomFactor);
+		perspectiveEventHandler.resetScaleAndTranslation();
+		float zoomFactor = perspective.getScaleForCenterBitmap() * START_ZOOM_FACTOR;
+		perspective.setScale(zoomFactor);
 	}
 
 	private void initialiseResizingState() {
@@ -265,7 +264,7 @@ public class TransformTool extends BaseToolWithRectangleShape {
 	private void rotate(RotateCommand.RotateDirection rotateDirection) {
 		IndeterminateProgressDialog.getInstance().show();
 		for (Layer layer : LayerListener.getInstance().getAdapter().getLayers()) {
-			Command command = new RotateCommand(rotateDirection);
+			Command command = new RotateCommand(rotateDirection, perspectiveEventHandler);
 
 			if (layer.getSelected()) {
 				((RotateCommand) command).addObserver(this);

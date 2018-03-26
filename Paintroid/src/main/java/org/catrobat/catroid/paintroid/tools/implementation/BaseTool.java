@@ -59,6 +59,7 @@ import org.catrobat.catroid.paintroid.tools.Tool;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.ui.DrawingSurface;
 import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -86,18 +87,19 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 		ERASE_XFERMODE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
 	}
 
-	final Paint checkeredPattern;
-	final int scrollTolerance;
+	Paint checkeredPattern;
+	int scrollTolerance;
 	final Context context;
 	final PointF movedDistance;
 	private final ToolType toolType;
-	private final OnColorPickedListener onColorPickedListener;
-	final OnBrushChangedListener onBrushChangedListener;
+	private OnColorPickedListener onColorPickedListener;
+	OnBrushChangedListener onBrushChangedListener;
 	boolean toolOptionsShown = false;
 	LinearLayout toolSpecificOptionsLayout;
 	PointF previousEventCoordinate;
 	private LinearLayout toolOptionsLayout;
 
+	protected PerspectiveEventHandler perspectiveEventHandler;
 	protected Perspective perspective;
 
 	public BaseTool(Context context, ToolType toolType) {
@@ -105,9 +107,16 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 		this.toolType = toolType;
 		this.context = context;
 
+		movedDistance = new PointF(0f, 0f);
+		previousEventCoordinate = new PointF(0f, 0f);
+	}
+
+	@Override
+	public void init() {
 		Resources resources = context.getResources();
 		Bitmap checkerboard = BitmapFactory.decodeResource(resources, R.drawable.checkeredbg);
 		BitmapShader shader = new BitmapShader(checkerboard, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+
 		checkeredPattern = new Paint();
 		checkeredPattern.setShader(shader);
 
@@ -135,9 +144,6 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 
 		ColorPickerDialog.getInstance().addOnColorPickedListener(onColorPickedListener);
 
-		movedDistance = new PointF(0f, 0f);
-		previousEventCoordinate = new PointF(0f, 0f);
-
 		toolOptionsLayout = (LinearLayout) ((Activity) context).findViewById(R.id.layout_tool_options);
 		toolSpecificOptionsLayout = (LinearLayout) ((Activity) context).findViewById(R.id.layout_tool_specific_options);
 		resetAndInitializeToolOptions();
@@ -146,6 +152,11 @@ public abstract class BaseTool extends Observable implements Tool, Observer {
 	@Override
 	public void setPerspective(Perspective perspective) {
 		this.perspective = perspective;
+	}
+
+	@Override
+	public void setPerspectiveEventHandler(PerspectiveEventHandler handler) {
+		this.perspectiveEventHandler = handler;
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public abstract class BaseToolWithShape extends BaseTool implements
 	private static final String BUNDLE_TOOL_POSITION_Y = "TOOL_POSITION_Y";
 
 	@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-	public final PointF toolPosition;
+	public PointF toolPosition;
 
 	int primaryShapeColor;
 	int secondaryShapeColor;
@@ -58,24 +58,29 @@ public abstract class BaseToolWithShape extends BaseTool implements
 
 		primaryShapeColor = resources.getColor(R.color.rectangle_primary_color);
 		secondaryShapeColor = resources.getColor(R.color.rectangle_secondary_color);
-		float actionBarHeight = NavigationDrawerMenuActivity.ACTION_BAR_HEIGHT * metrics.density;
-		PointF surfaceToolPosition = new PointF(metrics.widthPixels / 2f, metrics.heightPixels
-				/ 2f - actionBarHeight);
-		toolPosition = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(surfaceToolPosition);
+
 		linePaint = new Paint();
 		linePaint.setColor(primaryShapeColor);
+	}
+
+	@Override
+	public void init() {
+		super.init();
+		float actionBarHeight = NavigationDrawerMenuActivity.ACTION_BAR_HEIGHT * metrics.density;
+		PointF surfaceToolPosition = new PointF(metrics.widthPixels / 2f, metrics.heightPixels / 2f - actionBarHeight);
+		toolPosition = perspective.getCanvasPointFromSurfacePoint(surfaceToolPosition);
 	}
 
 	@Override
 	public abstract void drawShape(Canvas canvas);
 
 	float getStrokeWidthForZoom(float defaultStrokeWidth, float minStrokeWidth, float maxStrokeWidth) {
-		float strokeWidth = (defaultStrokeWidth * metrics.density) / PaintroidApplication.perspective.getScale();
+		float strokeWidth = (defaultStrokeWidth * metrics.density) / perspective.getScale();
 		return Math.min(maxStrokeWidth, Math.max(minStrokeWidth, strokeWidth));
 	}
 
 	float getInverselyProportionalSizeForZoom(float defaultSize) {
-		float applicationScale = PaintroidApplication.perspective.getScale();
+		float applicationScale = perspective.getScale();
 		return (defaultSize * metrics.density) / applicationScale;
 	}
 

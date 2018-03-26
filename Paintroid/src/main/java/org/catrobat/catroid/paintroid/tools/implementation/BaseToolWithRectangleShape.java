@@ -126,24 +126,6 @@ public abstract class BaseToolWithRectangleShape extends BaseToolWithShape {
 	public BaseToolWithRectangleShape(Context context, ToolType toolType) {
 		super(context, toolType);
 
-		final Resources resources = context.getResources();
-		int orientation = resources.getConfiguration().orientation;
-		float boxSize = orientation == Configuration.ORIENTATION_PORTRAIT
-				? metrics.widthPixels
-				: metrics.heightPixels;
-		boxWidth = boxSize / PaintroidApplication.perspective.getScale()
-				- getInverselyProportionalSizeForZoom(DEFAULT_RECTANGLE_MARGIN) * 2;
-		boxHeight = boxWidth;
-
-		if (DEFAULT_RESPECT_MAXIMUM_BORDER_RATIO && !PaintroidApplication.drawingSurface.isBitmapNull() && (
-				boxHeight > PaintroidApplication.drawingSurface
-						.getBitmapHeight() * MAXIMUM_BORDER_RATIO
-						|| boxWidth > PaintroidApplication.drawingSurface
-						.getBitmapWidth() * MAXIMUM_BORDER_RATIO)) {
-			boxHeight = PaintroidApplication.drawingSurface.getBitmapHeight() * MAXIMUM_BORDER_RATIO;
-			boxWidth = PaintroidApplication.drawingSurface.getBitmapWidth() * MAXIMUM_BORDER_RATIO;
-		}
-
 		resizeCircleSize = getDensitySpecificValue(4);
 		rotationArrowArcStrokeWidth = getDensitySpecificValue(2);
 		rotationArrowArcRadius = getDensitySpecificValue(8);
@@ -161,8 +143,6 @@ public abstract class BaseToolWithRectangleShape extends BaseToolWithShape {
 		respectMaximumBorderRatio = DEFAULT_RESPECT_MAXIMUM_BORDER_RATIO;
 		respectMaximumBoxResolution = DEFAULT_RESPECT_MAXIMUM_BOX_RESOLUTION;
 		maximumBoxResolution = DEFAULT_MAXIMUM_BOX_RESOLUTION;
-
-		initScaleDependedValues();
 
 		linePaint.reset();
 		linePaint.setDither(true);
@@ -189,6 +169,31 @@ public abstract class BaseToolWithRectangleShape extends BaseToolWithShape {
 		arrowPath = new Path();
 		tempDrawingRectangle = new RectF();
 		tempToolPosition = new PointF();
+	}
+
+	@Override
+	public void init() {
+		super.init();
+
+		final Resources resources = context.getResources();
+		int orientation = resources.getConfiguration().orientation;
+		float boxSize = orientation == Configuration.ORIENTATION_PORTRAIT
+				? metrics.widthPixels
+				: metrics.heightPixels;
+		boxWidth = boxSize / perspective.getScale()
+				- getInverselyProportionalSizeForZoom(DEFAULT_RECTANGLE_MARGIN) * 2;
+		boxHeight = boxWidth;
+
+		if (DEFAULT_RESPECT_MAXIMUM_BORDER_RATIO && !PaintroidApplication.drawingSurface.isBitmapNull() && (
+				boxHeight > PaintroidApplication.drawingSurface
+						.getBitmapHeight() * MAXIMUM_BORDER_RATIO
+						|| boxWidth > PaintroidApplication.drawingSurface
+						.getBitmapWidth() * MAXIMUM_BORDER_RATIO)) {
+			boxHeight = PaintroidApplication.drawingSurface.getBitmapHeight() * MAXIMUM_BORDER_RATIO;
+			boxWidth = PaintroidApplication.drawingSurface.getBitmapWidth() * MAXIMUM_BORDER_RATIO;
+		}
+
+		initScaleDependedValues();
 	}
 
 	private int getDensitySpecificValue(int value) {

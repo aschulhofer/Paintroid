@@ -27,15 +27,18 @@ import android.util.Log;
 
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.tools.Layer;
+import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 
 public class RotateCommand extends BaseCommand {
 	private static final String TAG = RotateCommand.class.getSimpleName();
 
 	private static final float ANGLE = 90;
-	private RotateDirection rotateDirection;
+	private final RotateDirection rotateDirection;
+	private final PerspectiveEventHandler perspectiveEventHandler;
 
-	public RotateCommand(RotateDirection rotateDirection) {
+	public RotateCommand(RotateDirection rotateDirection, PerspectiveEventHandler perspectiveEventHandler) {
 		this.rotateDirection = rotateDirection;
+		this.perspectiveEventHandler = perspectiveEventHandler;
 	}
 
 	@Override
@@ -90,6 +93,10 @@ public class RotateCommand extends BaseCommand {
 
 	public RotateDirection getRotateDirection() {
 		return rotateDirection;
+	}
+
+	public PerspectiveEventHandler getPerspectiveEventHandler() {
+		return perspectiveEventHandler;
 	}
 
 	public enum RotateDirection {

@@ -96,7 +96,6 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 	private boolean isKeyboardShown;
 	private Bundle toolBundle = new Bundle();
 
-	DrawingSurface drawingSurface;
 	UndoRedoManager undoRedoManager;
 
 	@Override
@@ -194,7 +193,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		commandManager.commitAddLayerCommand(
 				new LayerCommand(LayerListener.getInstance().getAdapter().getLayer(0)));
 
-		undoRedoManager = UndoRedoManager.getInstance().withPerspective(perspective);
+		undoRedoManager = UndoRedoManager.getInstance().withPerspective(perspective).withPerspectiveEventHandler(perspectiveEventHandler);
 		undoRedoManager.update();
 
 		commandManager.setInitialized(true);
@@ -317,7 +316,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 
 		drawingSurface.resetBitmap(LayerListener.getInstance().getCurrentLayer().getImage());
 
-		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
+		perspectiveEventHandler.resetScaleAndTranslation();
 
 		PaintroidApplication.currentTool.resetInternalState(Tool.StateChange.NEW_IMAGE_LOADED);
 
@@ -413,7 +412,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		switch (requestCode) {
 			case REQUEST_CODE_IMPORTPNG:
 				Uri selectedGalleryImageUri = data.getData();
-				Tool tool = ToolFactory.createTool(this, ToolType.IMPORTPNG, perspective);
+				Tool tool = ToolFactory.createTool(this, ToolType.IMPORTPNG, perspective, perspectiveEventHandler);
 				switchTool(tool);
 
 				loadBitmapFromUriAndRun(selectedGalleryImageUri,
@@ -451,7 +450,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 				importPng();
 				break;
 			default:
-				Tool tool = ToolFactory.createTool(this, changeToToolType, perspective);
+				Tool tool = ToolFactory.createTool(this, changeToToolType, perspective, perspectiveEventHandler);
 				switchTool(tool);
 				break;
 		}
@@ -568,7 +567,7 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 	private void setFullScreen(boolean isFullScreen) {
 
 		perspective.setFullscreen(isFullScreen);
-		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
+		perspectiveEventHandler.resetScaleAndTranslation();
 
 		NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 		mNavigationView.setNavigationItemSelectedListener(this);
@@ -663,7 +662,8 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		drawingSurface = (DrawingSurface) findViewById(R.id.drawingSurfaceView);
 
 		initPerspective(drawingSurface.getHolder(), density);
-		perspective.resetScaleAndTranslation(drawingSurface.getBitmapWidth(), drawingSurface.getBitmapHeight());
+		initPerspectiveEventHandler();
+		perspectiveEventHandler.resetScaleAndTranslation();
 		drawingSurface.withPerspective(perspective);
 
 		PaintroidApplication.drawingSurface = drawingSurface;

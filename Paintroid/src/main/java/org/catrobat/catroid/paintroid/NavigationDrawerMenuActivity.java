@@ -50,7 +50,9 @@ import org.catrobat.catroid.paintroid.listener.LayerListener;
 import org.catrobat.catroid.paintroid.tools.Tool.StateChange;
 import org.catrobat.catroid.paintroid.tools.implementation.ImportTool;
 import org.catrobat.catroid.paintroid.ui.DrawingSurface;
+import org.catrobat.catroid.paintroid.ui.DrawingSurfacePerspectiveEventHandler;
 import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 import org.catrobat.catroid.paintroid.ui.ToastFactory;
 
 import java.io.File;
@@ -88,7 +90,13 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 	@VisibleForTesting
 	public boolean openedFromCatroid;
 
+	protected DrawingSurface drawingSurface;
 	protected Perspective perspective;
+	protected PerspectiveEventHandler perspectiveEventHandler;
+
+	protected void initPerspectiveEventHandler() {
+		perspectiveEventHandler = new DrawingSurfacePerspectiveEventHandler(drawingSurface, perspective);
+	}
 
 	protected void initPerspective(final SurfaceHolder holder, final float density) {
 		perspective = createPerspective(holder, density);
@@ -100,6 +108,10 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 
 	public Perspective getPerspective() {
 		return perspective;
+	}
+
+	public PerspectiveEventHandler getPerspectiveEventHandler() {
+		return perspectiveEventHandler;
 	}
 
 	boolean imageHasBeenModified() {
@@ -344,10 +356,7 @@ public abstract class NavigationDrawerMenuActivity extends AppCompatActivity {
 
 		PaintroidApplication.drawingSurface.resetBitmap(bitmap);
 
-		perspective.resetScaleAndTranslation(
-			PaintroidApplication.drawingSurface.getBitmapWidth(),
-			PaintroidApplication.drawingSurface.getBitmapHeight()
-		);
+		perspectiveEventHandler.resetScaleAndTranslation();
 
 		PaintroidApplication.currentTool.resetInternalState(StateChange.NEW_IMAGE_LOADED);
 

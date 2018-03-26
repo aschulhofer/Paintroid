@@ -101,8 +101,7 @@ public class CursorTool extends BaseToolWithShape {
 			pathInsideBitmap = true;
 		}
 
-		PointF cursorSurfacePosition = PaintroidApplication.perspective
-				.getSurfacePointFromCanvasPoint(new PointF(newCursorPositionX, newCursorPositionY));
+		PointF cursorSurfacePosition = perspective.getSurfacePointFromCanvasPoint(new PointF(newCursorPositionX, newCursorPositionY));
 
 		float surfaceWidth = PaintroidApplication.drawingSurface.getWidth();
 		float surfaceHeight = PaintroidApplication.drawingSurface.getHeight();
@@ -124,8 +123,7 @@ public class CursorTool extends BaseToolWithShape {
 		}
 
 		if (slowCursor) {
-			PointF cursorCanvasPosition = PaintroidApplication.perspective
-					.getCanvasPointFromSurfacePoint(cursorSurfacePosition);
+			PointF cursorCanvasPosition = perspective.getCanvasPointFromSurfacePoint(cursorSurfacePosition);
 			newCursorPositionX = cursorCanvasPosition.x;
 			newCursorPositionY = cursorCanvasPosition.y;
 		}

@@ -75,6 +75,12 @@ public class GeometricFillTool extends BaseToolWithRectangleShape {
 		shapeDrawType = ShapeDrawType.FILL;
 
 		createOverlayBitmap();
+	}
+
+	@Override
+	public void init() {
+		super.init();
+
 		createAndSetBitmap();
 	}
 

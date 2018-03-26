@@ -27,6 +27,7 @@ import android.graphics.PointF;
 import android.os.Bundle;
 
 import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 
 public interface Tool {
 
@@ -73,7 +74,10 @@ public interface Tool {
 
 	void leaveTool();
 
+	void init();
+
 	void setPerspective(Perspective perspective);
+	void setPerspectiveEventHandler(PerspectiveEventHandler handler);
 
 	enum StateChange {
 		ALL, RESET_INTERNAL_STATE, NEW_IMAGE_LOADED, MOVE_CANCELED

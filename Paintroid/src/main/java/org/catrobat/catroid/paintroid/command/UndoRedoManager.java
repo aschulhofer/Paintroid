@@ -34,6 +34,7 @@ import org.catrobat.catroid.paintroid.listener.LayerListener;
 import org.catrobat.catroid.paintroid.tools.Layer;
 import org.catrobat.catroid.paintroid.tools.Tool;
 import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public final class UndoRedoManager {
 	private static UndoRedoManager instance;
 
 	private Perspective perspective;
+	private PerspectiveEventHandler perspectiveEventHandler;
 
 	private UndoRedoManager() {
 	}
@@ -54,12 +56,17 @@ public final class UndoRedoManager {
 		return instance;
 	}
 
+	public UndoRedoManager withPerspectiveEventHandler(PerspectiveEventHandler perspectiveEventHandler) {
+		this.perspectiveEventHandler = perspectiveEventHandler;
+		return this;
+	}
+
 	public UndoRedoManager withPerspective(Perspective perspective) {
 		this.perspective = perspective;
 		return this;
 	}
 
-	private static void undoResizeCommand(Layer undoLayer, ResizeCommand undoCommand) {
+	private void undoResizeCommand(Layer undoLayer, ResizeCommand undoCommand) {
 		for (Layer layer : LayerListener.getInstance().getAdapter().getLayers()) {
 			if (layer == undoLayer) {
 				continue;
@@ -101,7 +108,7 @@ public final class UndoRedoManager {
 		}
 	}
 
-	private static void redoResizeCommand(Layer redoLayer, ResizeCommand redoCommand) {
+	private void redoResizeCommand(Layer redoLayer, ResizeCommand redoCommand) {
 		for (Layer layer : LayerListener.getInstance().getAdapter().getLayers()) {
 			if (layer == redoLayer) {
 				continue;
@@ -131,7 +138,7 @@ public final class UndoRedoManager {
 		}
 	}
 
-	private static void undoRotateCommand(Layer undoLayer, RotateCommand undoCommand) {
+	private void undoRotateCommand(Layer undoLayer, RotateCommand undoCommand) {
 		for (Layer layer : LayerListener.getInstance().getAdapter().getLayers()) {
 			if (layer == undoLayer) {
 				continue;
@@ -162,7 +169,7 @@ public final class UndoRedoManager {
 					rotateDirection = RotateCommand.RotateDirection.ROTATE_LEFT;
 			}
 
-			Command rotateCommand = new RotateCommand(rotateDirection);
+			Command rotateCommand = new RotateCommand(rotateDirection, perspectiveEventHandler);
 			PaintroidApplication.commandManager.commitCommandToLayer(new LayerCommand(layer), rotateCommand);
 		}
 
@@ -171,7 +178,7 @@ public final class UndoRedoManager {
 		}
 	}
 
-	private static void redoRotateCommand(Layer redoLayer, RotateCommand redoCommand) {
+	private void redoRotateCommand(Layer redoLayer, RotateCommand redoCommand) {
 		for (Layer layer : LayerListener.getInstance().getAdapter().getLayers()) {
 			if (layer == redoLayer) {
 				continue;
@@ -190,7 +197,7 @@ public final class UndoRedoManager {
 				}
 			}
 
-			Command rotateCommand = new RotateCommand(redoCommand.getRotateDirection());
+			Command rotateCommand = new RotateCommand(redoCommand.getRotateDirection(), redoCommand.getPerspectiveEventHandler());
 			PaintroidApplication.commandManager.commitCommandToLayer(new LayerCommand(layer), rotateCommand);
 		}
 	}
