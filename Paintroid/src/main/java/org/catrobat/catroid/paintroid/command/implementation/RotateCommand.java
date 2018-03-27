@@ -25,7 +25,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
 
-import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.tools.Layer;
 import org.catrobat.catroid.paintroid.ui.PerspectiveEventHandler;
 
@@ -84,10 +83,7 @@ public class RotateCommand extends BaseCommand {
 
 		setChanged();
 
-		PaintroidApplication.perspective.resetScaleAndTranslation(
-			PaintroidApplication.drawingSurface.getBitmapWidth(),
-			PaintroidApplication.drawingSurface.getBitmapHeight()
-		);
+		perspectiveEventHandler.resetScaleAndTranslation();
 		notifyStatus(NotifyStates.COMMAND_DONE);
 	}
 

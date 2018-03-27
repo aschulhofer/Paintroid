@@ -31,6 +31,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
+import org.catrobat.catroid.paintroid.ui.DrawingSurfacePerspectiveEventHandler;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.test.paintroid.stubs.CommandManagerStub;
 import org.catrobat.catroid.paintroid.tools.Tool;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseTool;
@@ -49,6 +51,7 @@ public abstract class BaseToolTest {
 	Tool toolToTest;
 	Paint paint;
 	CommandManagerStub commandManagerStub;
+	Perspective perspective;
 
 	@Rule
 	public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -59,6 +62,14 @@ public abstract class BaseToolTest {
 	@UiThreadTest
 	@Before
 	public void setUp() throws Exception {
+		perspective = activityTestRule.getActivity().getPerspective();
+
+		if(toolToTest != null) {
+			toolToTest.setPerspective(perspective);
+			toolToTest.setPerspectiveEventHandler(activityTestRule.getActivity().getPerspectiveEventHandler());
+			toolToTest.init();
+		}
+
 		commandManagerStub = new CommandManagerStub();
 		paint = new Paint();
 		paint.setColor(Color.BLACK);

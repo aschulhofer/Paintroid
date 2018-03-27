@@ -46,14 +46,10 @@ public class GeometricFillToolTests extends BaseToolTest {
 	@Override
 	@Before
 	public void setUp() throws Exception {
-		rectangleShapeTool = new GeometricFillTool(getActivity(), ToolType.SHAPE);
-		rectangleShapeTool.baseShape = GeometricFillTool.BaseShape.RECTANGLE;
-		ovalShapeTool = new GeometricFillTool(getActivity(), ToolType.SHAPE);
-		ovalShapeTool.baseShape = GeometricFillTool.BaseShape.OVAL;
-		heartShapeTool = new GeometricFillTool(getActivity(), ToolType.SHAPE);
-		heartShapeTool.baseShape = GeometricFillTool.BaseShape.HEART;
-		starShapeTool = new GeometricFillTool(getActivity(), ToolType.SHAPE);
-		starShapeTool.baseShape = GeometricFillTool.BaseShape.STAR;
+		rectangleShapeTool = createFillTool(ToolType.SHAPE, GeometricFillTool.BaseShape.RECTANGLE);
+		ovalShapeTool = createFillTool(ToolType.SHAPE, GeometricFillTool.BaseShape.OVAL);
+		heartShapeTool = createFillTool(ToolType.SHAPE, GeometricFillTool.BaseShape.HEART);
+		starShapeTool = createFillTool(ToolType.SHAPE, GeometricFillTool.BaseShape.STAR);
 		super.setUp();
 	}
 
@@ -87,5 +83,15 @@ public class GeometricFillToolTests extends BaseToolTest {
 		rectangleShapeTool.setDrawPaint(red);
 		int color = PaintroidApplication.currentTool.getDrawPaint().getColor();
 		assertEquals("Red colour expected", Color.RED, color);
+	}
+
+	protected GeometricFillTool createFillTool(ToolType toolType, GeometricFillTool.BaseShape baseShape) {
+		GeometricFillTool tool = new GeometricFillTool(getActivity(), toolType);
+		tool.baseShape = baseShape;
+		tool.setPerspective(activityTestRule.getActivity().getPerspective());
+		tool.setPerspectiveEventHandler(activityTestRule.getActivity().getPerspectiveEventHandler());
+		tool.init();
+
+		return tool;
 	}
 }

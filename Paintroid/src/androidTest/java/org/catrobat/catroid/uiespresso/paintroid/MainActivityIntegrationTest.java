@@ -28,6 +28,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
 import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
@@ -70,10 +71,12 @@ public class MainActivityIntegrationTest {
 	public SystemAnimationsRule systemAnimationsRule = new SystemAnimationsRule();
 	private PointF pointOnScreenMiddle;
 	private ActivityHelper activityHelper;
+	private Perspective perspective;
 
 	@Before
 	public void setUp() {
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
+		perspective = launchActivityRule.getActivity().getPerspective();
 		int displayWidth = activityHelper.getDisplayWidth();
 		int displayHeight = activityHelper.getDisplayHeight();
 		pointOnScreenMiddle = new PointF(displayWidth / 2, displayHeight / 2);
@@ -174,7 +177,7 @@ public class MainActivityIntegrationTest {
 		selectTool(ToolType.BRUSH);
 
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 
@@ -196,7 +199,7 @@ public class MainActivityIntegrationTest {
 		assertEquals("Color after orientation changed has to be black", Color.BLACK, selectedColor);
 
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 		assertEquals("Bitmap Point Color after restart has to be transparent", Color.TRANSPARENT, currentColor);
 
@@ -213,7 +216,7 @@ public class MainActivityIntegrationTest {
 		selectTool(ToolType.BRUSH);
 
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 

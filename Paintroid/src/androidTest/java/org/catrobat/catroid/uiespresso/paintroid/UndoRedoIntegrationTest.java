@@ -64,11 +64,15 @@ public class UndoRedoIntegrationTest {
 
 	private ActivityHelper activityHelper;
 
+	private Perspective perspective;
+
 	@Before
 	public void setUp() {
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
 
 		activityHelper.setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		onToolBarView()
 				.performSelectTool(ToolType.BRUSH);
@@ -179,8 +183,6 @@ public class UndoRedoIntegrationTest {
 
 	@Test
 	public void testPreserveZoomAndMoveAfterUndo() {
-		Perspective perspective = PaintroidApplication.perspective;
-
 		onDrawingSurfaceView()
 				.perform(touchAt(DrawingSurfaceLocationProvider.MIDDLE));
 
@@ -202,8 +204,6 @@ public class UndoRedoIntegrationTest {
 
 	@Test
 	public void testPreserveZoomAndMoveAfterRedo() {
-		Perspective perspective = PaintroidApplication.perspective;
-
 		onDrawingSurfaceView()
 				.perform(touchAt(DrawingSurfaceLocationProvider.MIDDLE));
 

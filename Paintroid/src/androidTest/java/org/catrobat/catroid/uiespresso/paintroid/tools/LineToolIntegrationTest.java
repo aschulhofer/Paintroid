@@ -29,6 +29,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
 import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
@@ -65,6 +66,7 @@ public class LineToolIntegrationTest {
 	public SystemAnimationsRule systemAnimationsRule = new SystemAnimationsRule();
 
 	private ActivityHelper activityHelper;
+	private Perspective perspective;
 
 	private int displayWidth;
 	private int displayHeight;
@@ -74,6 +76,7 @@ public class LineToolIntegrationTest {
 	@Before
 	public void setUp() {
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		PaintroidApplication.drawingSurface.destroyDrawingCache();
 
@@ -96,7 +99,7 @@ public class LineToolIntegrationTest {
 	@Test
 	public void testVerticalLineColor() {
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 
@@ -111,7 +114,7 @@ public class LineToolIntegrationTest {
 	@Test
 	public void testHorizontalLineColor() {
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 
@@ -126,7 +129,7 @@ public class LineToolIntegrationTest {
 	@Test
 	public void testDiagonalLineColor() {
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 
@@ -141,7 +144,7 @@ public class LineToolIntegrationTest {
 	@Test
 	public void testChangeLineToolForm() throws NoSuchFieldException, IllegalAccessException {
 		PointF pointOnSurface = getSurfacePointFromScreenPoint(pointOnScreenMiddle);
-		PointF pointOnCanvas = PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
+		PointF pointOnCanvas = perspective.getCanvasPointFromSurfacePoint(pointOnSurface);
 
 		int currentColor = PaintroidApplication.drawingSurface.getPixel(pointOnCanvas);
 

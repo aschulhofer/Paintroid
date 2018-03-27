@@ -33,6 +33,7 @@ import org.catrobat.catroid.paintroid.NavigationDrawerMenuActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.dialog.IndeterminateProgressDialog;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
 import org.catrobat.catroid.uiespresso.paintroid.util.BitmapLocationProvider;
 import org.catrobat.catroid.uiespresso.paintroid.util.DialogHiddenIdlingResource;
@@ -88,6 +89,8 @@ public class FillToolIntegrationTest {
 
 	private ActivityHelper activityHelper;
 
+	private Perspective perspective;
+
 	private IdlingResource dialogWait;
 
 	@Before
@@ -96,6 +99,7 @@ public class FillToolIntegrationTest {
 		IdlingRegistry.getInstance().register(dialogWait);
 
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		onToolBarView()
 				.performSelectTool(ToolType.FILL);
@@ -134,7 +138,7 @@ public class FillToolIntegrationTest {
 
 	@Test
 	public void testNothingHappensWhenClickedOutsideDrawingArea() {
-		PaintroidApplication.perspective.multiplyScale(.5f);
+		perspective.multiplyScale(.5f);
 		onToolProperties()
 				.checkColor(Color.BLACK);
 		onDrawingSurfaceView()

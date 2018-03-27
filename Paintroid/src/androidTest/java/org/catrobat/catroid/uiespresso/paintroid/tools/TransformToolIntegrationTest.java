@@ -32,6 +32,7 @@ import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.dialog.IndeterminateProgressDialog;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
 import org.catrobat.catroid.uiespresso.paintroid.util.DialogHiddenIdlingResource;
 import org.catrobat.catroid.uiespresso.paintroid.util.DrawingSurfaceLocationProvider;
@@ -87,6 +88,8 @@ public class TransformToolIntegrationTest {
 	private ActivityHelper activityHelper;
 	private IdlingResource dialogWait;
 
+	private Perspective perspective;
+
 	private int displayWidth;
 	private int displayHeight;
 
@@ -110,10 +113,6 @@ public class TransformToolIntegrationTest {
 
 		bitmap.setPixels(pixelsColorArray, 0, 10, verticalStartX,
 				verticalStartY, 10, lineLength);
-	}
-
-	private static PointF getSurfacePointFromCanvasPoint(PointF point) {
-		return PaintroidApplication.perspective.getSurfacePointFromCanvasPoint(point);
 	}
 
 	private static float getToolSelectionBoxWidth() {
@@ -157,6 +156,7 @@ public class TransformToolIntegrationTest {
 		IdlingRegistry.getInstance().register(dialogWait);
 
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		displayWidth = activityHelper.getDisplayWidth();
 		displayHeight = activityHelper.getDisplayHeight();
@@ -465,8 +465,8 @@ public class TransformToolIntegrationTest {
 	@Ignore("This is probably not intended behaviour")
 	@Test
 	public void testCenterBitmapAfterCropAndUndo() {
-		final PointF originalTopLeft = getSurfacePointFromCanvasPoint(new PointF(0, 0));
-		final PointF originalBottomRight = getSurfacePointFromCanvasPoint(
+		final PointF originalTopLeft = perspective.getSurfacePointFromCanvasPoint(new PointF(0, 0));
+		final PointF originalBottomRight = perspective.getSurfacePointFromCanvasPoint(
 				new PointF(initialWidth - 1, initialHeight - 1));
 
 		drawPlus(getWorkingBitmap(), initialWidth / 2);
@@ -482,8 +482,8 @@ public class TransformToolIntegrationTest {
 
 		final Bitmap croppedBitmap = getWorkingBitmap();
 
-		final PointF topLeft = getSurfacePointFromCanvasPoint(new PointF(0, 0));
-		final PointF bottomRight = getSurfacePointFromCanvasPoint(
+		final PointF topLeft = perspective.getSurfacePointFromCanvasPoint(new PointF(0, 0));
+		final PointF bottomRight = perspective.getSurfacePointFromCanvasPoint(
 				new PointF(croppedBitmap.getWidth(), croppedBitmap.getHeight()));
 
 		assertThat(initialHeight, greaterThan(croppedBitmap.getHeight()));
@@ -497,8 +497,8 @@ public class TransformToolIntegrationTest {
 		onTopBarView()
 				.performUndo();
 
-		final PointF undoTopLeft = getSurfacePointFromCanvasPoint(new PointF(0, 0));
-		final PointF undoBottomRight = getSurfacePointFromCanvasPoint(
+		final PointF undoTopLeft = perspective.getSurfacePointFromCanvasPoint(new PointF(0, 0));
+		final PointF undoBottomRight = perspective.getSurfacePointFromCanvasPoint(
 				new PointF(initialWidth - 1, initialHeight - 1));
 
 		assertEquals(undoTopLeft, originalTopLeft);
@@ -507,8 +507,8 @@ public class TransformToolIntegrationTest {
 
 	@Test
 	public void testCenterBitmapAfterCropDrawingOnTopRight() {
-		final PointF originalTopLeft = getSurfacePointFromCanvasPoint(new PointF(0, 0));
-		final PointF originalBottomRight = getSurfacePointFromCanvasPoint(
+		final PointF originalTopLeft = perspective.getSurfacePointFromCanvasPoint(new PointF(0, 0));
+		final PointF originalBottomRight = perspective.getSurfacePointFromCanvasPoint(
 				new PointF(initialWidth - 1, initialHeight - 1));
 
 		final Bitmap workingBitmap = getWorkingBitmap();
@@ -535,8 +535,8 @@ public class TransformToolIntegrationTest {
 				.perform(touchAt(DrawingSurfaceLocationProvider.TOOL_POSITION));
 
 		final Bitmap croppedBitmap = getWorkingBitmap();
-		final PointF topLeft = getSurfacePointFromCanvasPoint(new PointF(0, 0));
-		final PointF bottomRight = getSurfacePointFromCanvasPoint(
+		final PointF topLeft = perspective.getSurfacePointFromCanvasPoint(new PointF(0, 0));
+		final PointF bottomRight = perspective.getSurfacePointFromCanvasPoint(
 				new PointF(croppedBitmap.getWidth() - 1, croppedBitmap.getHeight() - 1));
 
 		onDrawingSurfaceView()
@@ -804,10 +804,10 @@ public class TransformToolIntegrationTest {
 				.performSelectTool(ToolType.TRANSFORM)
 				.performCloseToolOptions();
 
-		PaintroidApplication.perspective.multiplyScale(.25f);
+		perspective.multiplyScale(.25f);
 
-		PointF dragFrom = getSurfacePointFromCanvasPoint(new PointF(initialWidth, initialHeight));
-		PointF dragTo = getSurfacePointFromCanvasPoint(new PointF(maxWidth + 10, initialHeight));
+		PointF dragFrom = perspective.getSurfacePointFromCanvasPoint(new PointF(initialWidth, initialHeight));
+		PointF dragTo = perspective.getSurfacePointFromCanvasPoint(new PointF(maxWidth + 10, initialHeight));
 
 		onDrawingSurfaceView()
 				.perform(swipe(dragFrom, dragTo))
@@ -827,11 +827,11 @@ public class TransformToolIntegrationTest {
 				.performSelectTool(ToolType.TRANSFORM)
 				.performCloseToolOptions();
 
-		final float zoomFactor = PaintroidApplication.perspective.getScaleForCenterBitmap() * .25f;
-		PaintroidApplication.perspective.setScale(zoomFactor);
+		final float zoomFactor = perspective.getScaleForCenterBitmap() * .25f;
+		perspective.setScale(zoomFactor);
 
-		PointF dragFrom = getSurfacePointFromCanvasPoint(new PointF(initialWidth, initialHeight));
-		PointF dragTo = getSurfacePointFromCanvasPoint(new PointF(maxWidth + 10, initialHeight));
+		PointF dragFrom = perspective.getSurfacePointFromCanvasPoint(new PointF(initialWidth, initialHeight));
+		PointF dragTo = perspective.getSurfacePointFromCanvasPoint(new PointF(maxWidth + 10, initialHeight));
 
 		onDrawingSurfaceView()
 				.perform(swipe(dragFrom, dragTo));
@@ -936,7 +936,7 @@ public class TransformToolIntegrationTest {
 				.performSelectTool(ToolType.TRANSFORM)
 				.performCloseToolOptions();
 
-		PaintroidApplication.perspective.multiplyScale(.25f);
+		perspective.multiplyScale(.25f);
 
 		setToolPosition(initialWidth + initialHeight / 2,
 				initialHeight + initialHeight / 2);
@@ -956,7 +956,7 @@ public class TransformToolIntegrationTest {
 				.performSelectTool(ToolType.TRANSFORM)
 				.performCloseToolOptions();
 
-		PaintroidApplication.perspective.multiplyScale(.25f);
+		perspective.multiplyScale(.25f);
 
 		setToolPosition(initialWidth + initialHeight / 2,
 				initialHeight + initialHeight / 2);

@@ -100,7 +100,7 @@ public enum DrawingSurfaceLocationProvider implements CoordinatesProvider {
 		@Override
 		public float[] calculateCoordinates(View view) {
 			PointF toolPosition = ((BaseToolWithShape) PaintroidApplication.currentTool).toolPosition;
-			PointF point = PaintroidApplication.perspective.getSurfacePointFromCanvasPoint(toolPosition);
+			PointF point = PaintroidApplication.drawingSurface.getPerspective().getSurfacePointFromCanvasPoint(toolPosition);
 			return calculateViewOffset(view, point.x, point.y);
 		}
 	};
@@ -109,7 +109,7 @@ public enum DrawingSurfaceLocationProvider implements CoordinatesProvider {
 		DrawingSurface drawingSurface = (DrawingSurface) view;
 		float pointX = drawingSurface.getBitmapWidth() * percentageX;
 		float pointY = drawingSurface.getBitmapHeight() * percentageY;
-		PointF point = PaintroidApplication.perspective.getSurfacePointFromCanvasPoint(
+		PointF point = drawingSurface.getPerspective().getSurfacePointFromCanvasPoint(
 				new PointF(pointX, pointY));
 		return calculateViewOffset(view, point.x, point.y);
 	}

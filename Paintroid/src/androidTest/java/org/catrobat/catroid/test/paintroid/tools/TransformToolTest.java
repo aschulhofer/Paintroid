@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 
+import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.TransformTool;
 import org.junit.Before;
 import org.junit.Test;

@@ -27,7 +27,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.util.DisplayMetrics;
 
-import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseToolWithRectangleShape;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseToolWithShape;
@@ -59,7 +58,7 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 	@Override
 	@Before
 	public void setUp() throws Exception {
-		toolToTest = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.SHAPE);
+		toolToTest = createBaseToolWithRectangleShapeImplTool(ToolType.SHAPE);
 		super.setUp();
 
 		DisplayMetrics metrics = InstrumentationRegistry.getTargetContext()
@@ -269,9 +268,9 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 	public void testRectangleSizeMaximumWhenZoomed() {
 
 		float scale = 0.8f;
-		PaintroidApplication.perspective.setScale(scale);
+		perspective.setScale(scale);
 
-		toolToTest = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.SHAPE);
+		toolToTest = createBaseToolWithRectangleShapeImplTool(ToolType.SHAPE);
 
 		float width = ((BaseToolWithRectangleShape) toolToTest).boxWidth;
 		float height = ((BaseToolWithRectangleShape) toolToTest).boxHeight;
@@ -279,9 +278,9 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 		assertEquals("Width and Height should be the same with activating Rectangletool on low zoom out", width, height, Double.MIN_VALUE);
 
 		scale = 0.15f;
-		PaintroidApplication.perspective.setScale(scale);
+		perspective.setScale(scale);
 
-		toolToTest = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.SHAPE);
+		toolToTest = createBaseToolWithRectangleShapeImplTool(ToolType.SHAPE);
 
 		width = ((BaseToolWithRectangleShape) toolToTest).boxWidth;
 		height = ((BaseToolWithRectangleShape) toolToTest).boxHeight;
@@ -291,9 +290,9 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 				width, height);
 
 		scale = 0.1f;
-		PaintroidApplication.perspective.setScale(scale);
+		perspective.setScale(scale);
 
-		toolToTest = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.SHAPE);
+		toolToTest = createBaseToolWithRectangleShapeImplTool(ToolType.SHAPE);
 
 		float newWidth = ((BaseToolWithRectangleShape) toolToTest).boxWidth;
 		float newHeight = ((BaseToolWithRectangleShape) toolToTest).boxHeight;
@@ -311,17 +310,17 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 	@Test
 	public void testRectangleSizeChangeWhenZoomedLevel1ToLevel2() {
 		float scale = 1f;
-		PaintroidApplication.perspective.setScale(scale);
-		BaseToolWithRectangleShape rectTool1 = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.BRUSH);
+		perspective.setScale(scale);
+		BaseToolWithRectangleShape rectTool1 = createBaseToolWithRectangleShapeImplTool(ToolType.BRUSH);
 		scale = 2f;
-		PaintroidApplication.perspective.setScale(scale);
+		perspective.setScale(scale);
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			fail(e.getMessage());
 		}
 
-		BaseToolWithRectangleShape rectTool2 = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.BRUSH);
+		BaseToolWithRectangleShape rectTool2 = createBaseToolWithRectangleShapeImplTool(ToolType.BRUSH);
 		assertTrue("rectangle should be smaller with scale 2",
 				(rectTool1.boxWidth > rectTool2.boxWidth)
 						&& (rectTool1.boxHeight > rectTool2.boxHeight));
@@ -331,12 +330,12 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 	@Test
 	public void testRectangleSizeChangeWhenZoomedLevel1ToLevel05() {
 		float scale = 1f;
-		PaintroidApplication.perspective.setScale(scale);
+		perspective.setScale(scale);
 
-		BaseToolWithRectangleShape rectTool1 = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.BRUSH);
+		BaseToolWithRectangleShape rectTool1 = createBaseToolWithRectangleShapeImplTool(ToolType.BRUSH);
 		scale = 0.5f;
-		PaintroidApplication.perspective.setScale(scale);
-		BaseToolWithRectangleShape rectTool05 = new BaseToolWithRectangleShapeImpl(getActivity(), ToolType.BRUSH);
+		perspective.setScale(scale);
+		BaseToolWithRectangleShape rectTool05 = createBaseToolWithRectangleShapeImplTool(ToolType.BRUSH);
 		assertTrue("rectangle should be bigger with scale 0.5",
 				(rectTool1.boxWidth < rectTool05.boxWidth)
 						&& (rectTool1.boxHeight < rectTool05.boxHeight));
@@ -525,5 +524,14 @@ public class BaseToolWithRectangleShapeToolTest extends BaseToolTest {
 		protected void onClickInBox() {
 			drawingBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
 		}
+	}
+
+	protected BaseToolWithRectangleShape createBaseToolWithRectangleShapeImplTool(ToolType toolType) {
+		BaseToolWithRectangleShape tool = new BaseToolWithRectangleShapeImpl(getActivity(), toolType);
+		tool.setPerspective(activityTestRule.getActivity().getPerspective());
+		tool.setPerspectiveEventHandler(activityTestRule.getActivity().getPerspectiveEventHandler());
+		tool.init();
+
+		return tool;
 	}
 }

@@ -32,6 +32,7 @@ import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.dialog.IndeterminateProgressDialog;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.DialogHiddenIdlingResource;
 import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
@@ -76,12 +77,16 @@ public class RectangleFillToolIntegrationTest {
 
 	private Bitmap workingBitmap;
 
+	private Perspective perspective;
+
 	@Before
 	public void setUp() {
 		dialogWait = new DialogHiddenIdlingResource(IndeterminateProgressDialog.getInstance());
 		Espresso.registerIdlingResources(dialogWait);
 
 		PaintroidApplication.drawingSurface.destroyDrawingCache();
+
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		workingBitmap = getWorkingBitmap();
 
@@ -121,7 +126,7 @@ public class RectangleFillToolIntegrationTest {
 	@Test
 	public void testEllipseIsDrawnOnBitmap() {
 
-		PaintroidApplication.perspective.setScale(1.0f);
+		perspective.setScale(1.0f);
 
 		selectTool(ToolType.SHAPE);
 
@@ -274,7 +279,7 @@ public class RectangleFillToolIntegrationTest {
 
 	@Test
 	public void testEraseWithHeartShape() {
-		PaintroidApplication.perspective.setScale(1.0f);
+		perspective.setScale(1.0f);
 
 		selectTool(ToolType.SHAPE);
 		BaseToolWithRectangleShape tool = (BaseToolWithRectangleShape) PaintroidApplication.currentTool;

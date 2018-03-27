@@ -6,6 +6,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
+import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.uiespresso.paintroid.util.UiInteractions;
 import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
@@ -41,16 +42,19 @@ public class ScrollingViewIntegrationTest {
 	@Rule
 	public SystemAnimationsRule systemAnimationsRule = new SystemAnimationsRule();
 
+	private Perspective perspective;
+
 	@Before
 	public void setUp() {
 		selectTool(ToolType.BRUSH);
+		perspective = launchActivityRule.getActivity().getPerspective();
 	}
 
 	@Test
 	public void testScrollingViewDrawTool() throws NoSuchFieldException, IllegalAccessException {
 
 		final int perspectiveScale = 5;
-		PaintroidApplication.perspective.setScale(perspectiveScale);
+		perspective.setScale(perspectiveScale);
 
 		float surfaceWidth = getSurfaceWidth();
 		float surfaceHeight = getSurfaceHeight();
@@ -112,7 +116,7 @@ public class ScrollingViewIntegrationTest {
 	public void testScrollingViewRectTool() throws NoSuchFieldException, IllegalAccessException {
 
 		final int perspectiveScale = 5;
-		PaintroidApplication.perspective.setScale(perspectiveScale);
+		perspective.setScale(perspectiveScale);
 
 		float surfaceWidth = getSurfaceWidth();
 		float surfaceHeight = getSurfaceHeight();
@@ -170,7 +174,7 @@ public class ScrollingViewIntegrationTest {
 	@Test
 	public void testScrollingViewCursorTool() throws NoSuchFieldException, IllegalAccessException {
 		final int perspectiveScale = 5;
-		PaintroidApplication.perspective.setScale(perspectiveScale);
+		perspective.setScale(perspectiveScale);
 
 		float surfaceWidth = getSurfaceWidth();
 		float surfaceHeight = getSurfaceHeight();
