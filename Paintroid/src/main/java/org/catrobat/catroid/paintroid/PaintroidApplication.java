@@ -45,7 +45,6 @@ public class PaintroidApplication extends Application {
 	public static DrawingSurface drawingSurface;
 	public static CommandManager commandManager;
 	public static Tool currentTool;
-	public static Perspective perspective;
 	public static LinkedList<LayerCommand> layerOperationsCommandList;
 	public static LinkedList<LayerCommand> layerOperationsUndoCommandList;
 	public static ArrayList<LayerBitmapCommand> drawBitmapCommandsAtLayer;

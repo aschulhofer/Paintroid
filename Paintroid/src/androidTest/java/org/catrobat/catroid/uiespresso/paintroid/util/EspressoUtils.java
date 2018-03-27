@@ -38,15 +38,11 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import org.catrobat.catroid.common.paintroid.Utils;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.dialog.colorpicker.PresetSelectorView;
 import org.catrobat.catroid.paintroid.intro.TapTargetTopBar;
-import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.ColorPickerViewInteraction;
-import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.LayerMenuViewInteraction;
-import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.NavigationDrawerInteraction;
-import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.ToolBarViewInteraction;
-import org.catrobat.catroid.common.paintroid.Utils;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseTool;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseToolWithShape;
@@ -54,6 +50,10 @@ import org.catrobat.catroid.paintroid.tools.implementation.EraserTool;
 import org.catrobat.catroid.paintroid.tools.implementation.FillTool;
 import org.catrobat.catroid.paintroid.ui.Perspective;
 import org.catrobat.catroid.paintroid.ui.button.ColorButton;
+import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.ColorPickerViewInteraction;
+import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.LayerMenuViewInteraction;
+import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.NavigationDrawerInteraction;
+import org.catrobat.catroid.uiespresso.paintroid.util.wrappers.ToolBarViewInteraction;
 import org.hamcrest.Matcher;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -68,7 +68,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.catrobat.catroid.uiespresso.paintroid.util.UiInteractions.selectViewPagerPage;
 import static org.catrobat.catroid.uiespresso.paintroid.util.UiInteractions.unconstrainedScrollTo;
 import static org.catrobat.catroid.uiespresso.paintroid.util.UiMatcher.hasTablePosition;
@@ -126,12 +125,8 @@ public final class EspressoUtils {
 		return Utils.getSurfacePointFromScreenPoint(screenPoint);
 	}
 
-	public static PointF getCanvasPointFromScreenPoint(PointF screenPoint) {
-		return Utils.getCanvasPointFromScreenPoint(screenPoint);
-	}
-
-	public static PointF getCanvasPointFromSurfacePoint(PointF surfacePoint) {
-		return PaintroidApplication.perspective.getCanvasPointFromSurfacePoint(surfacePoint);
+	public static PointF getCanvasPointFromScreenPoint(PointF screenPoint, Perspective currentPerspective) {
+		return Utils.getCanvasPointFromScreenPoint(screenPoint, currentPerspective);
 	}
 
 	public static PointF convertFromCanvasToScreen(PointF canvasPoint, Perspective currentPerspective) {
@@ -194,14 +189,6 @@ public final class EspressoUtils {
 		waitMillis(500);
 	}
 
-	public static float getSurfaceWidth() {
-		return PaintroidApplication.perspective.surfaceWidth;
-	}
-
-	public static float getSurfaceHeight() {
-		return PaintroidApplication.perspective.surfaceHeight;
-	}
-
 	public static Bitmap getWorkingBitmap() {
 		return PaintroidApplication.drawingSurface.workingBitmap;
 	}
@@ -220,14 +207,6 @@ public final class EspressoUtils {
 
 	public static PointF getToolMemberBoxPosition() {
 		return ((BaseToolWithShape) PaintroidApplication.currentTool).toolPosition;
-	}
-
-	public static float getSurfaceCenterX() {
-		return PaintroidApplication.perspective.surfaceCenterX;
-	}
-
-	public static float getSurfaceCenterY() {
-		return PaintroidApplication.perspective.surfaceCenterY;
 	}
 
 	/**

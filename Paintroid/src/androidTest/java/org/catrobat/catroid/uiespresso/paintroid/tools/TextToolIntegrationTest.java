@@ -34,15 +34,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.dialog.IndeterminateProgressDialog;
-import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
-import org.catrobat.catroid.uiespresso.paintroid.util.DialogHiddenIdlingResource;
-import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.TextTool;
+import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
+import org.catrobat.catroid.uiespresso.paintroid.util.DialogHiddenIdlingResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,7 +62,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasFocus;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.BLACK_COLOR_PICKER_BUTTON_POSITION;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getCanvasPointFromScreenPoint;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.resetColorPicker;
@@ -111,20 +111,22 @@ public class TextToolIntegrationTest {
 	private ToggleButton boldToggleButton;
 	private Spinner textSizeSpinner;
 
+	private Perspective perspective;
+
 	@Before
 	public void setUp() {
+		PaintroidApplication.drawingSurface.destroyDrawingCache();
+
 		dialogWait = new DialogHiddenIdlingResource(IndeterminateProgressDialog.getInstance());
 		IdlingRegistry.getInstance().register(dialogWait);
 
 		activityHelper = new ActivityHelper(launchActivityRule.getActivity());
-
-		PaintroidApplication.drawingSurface.destroyDrawingCache();
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		resetColorPicker();
 		resetDrawPaintAndBrushPickerView();
 
-		onToolBarView()
-				.performSelectTool(ToolType.TEXT);
+		onToolBarView().performSelectTool(ToolType.TEXT);
 		textTool = (TextTool) PaintroidApplication.currentTool;
 
 		textEditText = (EditText) activityHelper.findViewById(R.id.text_tool_dialog_input_text);
@@ -448,7 +450,7 @@ public class TextToolIntegrationTest {
 		int numberOfBlackPixels = countPixelsWithColor(pixelsTool, Color.BLACK);
 
 		PointF screenPoint = new PointF(activityHelper.getDisplayWidth() / 2.0f, activityHelper.getDisplayHeight() / 2.0f);
-		PointF canvasPoint = getCanvasPointFromScreenPoint(screenPoint);
+		PointF canvasPoint = getCanvasPointFromScreenPoint(screenPoint, perspective);
 		canvasPoint.x = (float) Math.round(canvasPoint.x);
 		canvasPoint.y = (float) Math.round(canvasPoint.y);
 		setToolMemberBoxPosition(canvasPoint);

@@ -28,15 +28,15 @@ import android.support.test.espresso.action.Tapper;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
-import org.catrobat.catroid.paintroid.ui.Perspective;
-import org.catrobat.catroid.uiespresso.paintroid.util.UiInteractions;
-import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
 import org.catrobat.catroid.paintroid.tools.implementation.BaseToolWithRectangleShape;
 import org.catrobat.catroid.paintroid.tools.implementation.StampTool;
+import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.uiespresso.paintroid.util.UiInteractions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,13 +50,10 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.convertFromCanvasToScreen;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getActionbarHeight;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getScreenPointFromSurfaceCoordinates;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getStatusbarHeight;
-import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getSurfaceCenterX;
-import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getSurfaceCenterY;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getSurfacePointFromScreenPoint;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getToolMemberBoxPosition;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.resetColorPicker;
@@ -106,7 +103,7 @@ public class StampToolIntegrationTest {
 	public void testBoundingboxAlgorithm() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		perspective.setScale(1.0f);
 
-		PointF surfaceCenterPoint = getScreenPointFromSurfaceCoordinates(getSurfaceCenterX(), getSurfaceCenterY());
+		PointF surfaceCenterPoint = getScreenPointFromSurfaceCoordinates(perspective.getSurfaceCenterX(), perspective.getSurfaceCenterY());
 		onView(isRoot()).perform(touchAt(surfaceCenterPoint.x, surfaceCenterPoint.y - Y_CLICK_OFFSET - (SQUARE_LENGTH / 3)));
 
 		selectTool(ToolType.STAMP);
@@ -181,7 +178,7 @@ public class StampToolIntegrationTest {
 
 	@Test
 	public void testCopyPixel() throws NoSuchFieldException, IllegalAccessException {
-		PointF surfaceCenterPoint = getScreenPointFromSurfaceCoordinates(getSurfaceCenterX(), getSurfaceCenterY());
+		PointF surfaceCenterPoint = getScreenPointFromSurfaceCoordinates(perspective.getSurfaceCenterX(), perspective.getSurfaceCenterY());
 		onView(isRoot()).perform(touchAt(surfaceCenterPoint.x, surfaceCenterPoint.y - Y_CLICK_OFFSET));
 
 		selectTool(ToolType.STAMP);
@@ -217,7 +214,7 @@ public class StampToolIntegrationTest {
 
 	@Test
 	public void testStampOutsideDrawingSurface() throws NoSuchFieldException, IllegalAccessException {
-		onView(isRoot()).perform(touchAt(getSurfaceCenterX(), getSurfaceCenterY() + getActionbarHeight() + getStatusbarHeight() - Y_CLICK_OFFSET));
+		onView(isRoot()).perform(touchAt(perspective.getSurfaceCenterX(), perspective.getSurfaceCenterY() + getActionbarHeight() + getStatusbarHeight() - Y_CLICK_OFFSET));
 
 		int screenWidth = PaintroidApplication.drawingSurface.getBitmapWidth();
 		int screenHeight = PaintroidApplication.drawingSurface.getBitmapHeight();
@@ -226,12 +223,12 @@ public class StampToolIntegrationTest {
 		selectTool(ToolType.STAMP);
 
 		StampTool stampTool = (StampTool) PaintroidApplication.currentTool;
-		PointF toolPosition = new PointF(getSurfaceCenterX(), getSurfaceCenterY());
+		PointF toolPosition = new PointF(perspective.getSurfaceCenterX(), perspective.getSurfaceCenterY());
 		stampTool.toolPosition.set(toolPosition);
 		stampTool.boxWidth = (int) (screenWidth * STAMP_RESIZE_FACTOR);
 		stampTool.boxHeight = (int) (screenHeight * STAMP_RESIZE_FACTOR);
 
-		onView(isRoot()).perform(touchLongAt(getSurfaceCenterX(), getSurfaceCenterY() + getActionbarHeight() + getStatusbarHeight() - Y_CLICK_OFFSET));
+		onView(isRoot()).perform(touchLongAt(perspective.getSurfaceCenterX(), perspective.getSurfaceCenterY() + getActionbarHeight() + getStatusbarHeight() - Y_CLICK_OFFSET));
 
 		Bitmap drawingBitmap = stampTool.drawingBitmap.copy(Bitmap.Config.ARGB_8888, false);
 

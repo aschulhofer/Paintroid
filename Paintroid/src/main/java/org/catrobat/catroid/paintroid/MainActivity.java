@@ -667,6 +667,5 @@ public class MainActivity extends NavigationDrawerMenuActivity implements Naviga
 		drawingSurface.withPerspective(perspective);
 
 		PaintroidApplication.drawingSurface = drawingSurface;
-		PaintroidApplication.perspective = perspective;
 	}
 }

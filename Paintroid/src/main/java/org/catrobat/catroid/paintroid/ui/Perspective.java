@@ -25,9 +25,6 @@ import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
 import android.view.SurfaceHolder;
 
-import org.catrobat.catroid.paintroid.NavigationDrawerMenuActivity;
-import org.catrobat.catroid.paintroid.PaintroidApplication;
-
 import java.io.Serializable;
 
 public class Perspective implements Serializable {
@@ -40,14 +37,11 @@ public class Perspective implements Serializable {
 
 	private final float actionbarHeight;
 
-	@VisibleForTesting
-	public float surfaceWidth;
-	@VisibleForTesting
-	public float surfaceHeight;
-	@VisibleForTesting
-	public float surfaceCenterX;
-	@VisibleForTesting
-	public float surfaceCenterY;
+	private float surfaceWidth;
+	private float surfaceHeight;
+	private float surfaceCenterX;
+	private float surfaceCenterY;
+
 	@VisibleForTesting
 	public float surfaceScale;
 
@@ -151,8 +145,7 @@ public class Perspective implements Serializable {
 	}
 
 	public synchronized void applyToCanvas(Canvas canvas) {
-		canvas.scale(surfaceScale, surfaceScale, surfaceCenterX,
-				surfaceCenterY);
+		canvas.scale(surfaceScale, surfaceScale, surfaceCenterX, surfaceCenterY);
 		canvas.translate(surfaceTranslationX, surfaceTranslationY);
 	}
 
@@ -208,5 +201,21 @@ public class Perspective implements Serializable {
 
 	public void setSurfaceTranslationY(float translationY) {
 		surfaceTranslationY = translationY;
+	}
+
+	public float getSurfaceWidth() {
+		return surfaceWidth;
+	}
+
+	public float getSurfaceHeight() {
+		return surfaceHeight;
+	}
+
+	public float getSurfaceCenterX() {
+		return surfaceCenterX;
+	}
+
+	public float getSurfaceCenterY() {
+		return surfaceCenterY;
 	}
 }

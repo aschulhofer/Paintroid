@@ -31,6 +31,7 @@ import android.provider.MediaStore;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.MainActivity;
 import org.catrobat.catroid.paintroid.MultilingualActivity;
 import org.catrobat.catroid.paintroid.NavigationDrawerMenuActivity;
@@ -38,9 +39,9 @@ import org.catrobat.catroid.paintroid.PaintroidApplication;
 import org.catrobat.catroid.paintroid.R;
 import org.catrobat.catroid.paintroid.WelcomeActivity;
 import org.catrobat.catroid.paintroid.listener.LayerListener;
-import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
-import org.catrobat.catroid.common.paintroid.SystemAnimationsRule;
 import org.catrobat.catroid.paintroid.tools.ToolType;
+import org.catrobat.catroid.paintroid.ui.Perspective;
+import org.catrobat.catroid.uiespresso.paintroid.util.ActivityHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -68,7 +69,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getCanvasPointFromScreenPoint;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.getWorkingBitmap;
 import static org.catrobat.catroid.uiespresso.paintroid.util.EspressoUtils.openNavigationDrawer;
@@ -94,10 +94,14 @@ public class MenuFileActivityIntegrationTest {
 	public SystemAnimationsRule systemAnimationsRule = new SystemAnimationsRule();
 	private PointF screenPoint = null;
 
+	private Perspective perspective;
+
 	@Before
 	public void setUp() {
 
 		ActivityHelper activityHelper = new ActivityHelper(launchActivityRule.getActivity());
+
+		perspective = launchActivityRule.getActivity().getPerspective();
 
 		selectTool(ToolType.BRUSH);
 
@@ -168,7 +172,7 @@ public class MenuFileActivityIntegrationTest {
 		onView(withText(R.string.discard_button_text)).perform(click());
 		onView(withText(R.string.dialog_warning_new_image)).check(doesNotExist());
 
-		assertEquals("Image should not change when intent gets cancelled", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint)));
+		assertEquals("Image should not change when intent gets cancelled", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint, perspective)));
 
 		Instrumentation.ActivityResult resultOK = new Instrumentation.ActivityResult(Activity.RESULT_OK, new Intent());
 		intending(hasAction(Intent.ACTION_GET_CONTENT)).respondWith(resultOK);
@@ -177,7 +181,7 @@ public class MenuFileActivityIntegrationTest {
 		onView(withText(R.string.discard_button_text)).perform(click());
 		onView(withText(R.string.dialog_warning_new_image)).check(doesNotExist());
 
-		assertEquals("Image should be reset after loading intent returns OK", Color.TRANSPARENT, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint)));
+		assertEquals("Image should be reset after loading intent returns OK", Color.TRANSPARENT, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint, perspective)));
 	}
 
 	@Test
@@ -302,7 +306,7 @@ public class MenuFileActivityIntegrationTest {
 
 		onView(withText(R.string.dialog_warning_new_image)).check(doesNotExist());
 
-		assertEquals("Bitmap pixel not changed", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint)));
+		assertEquals("Bitmap pixel not changed", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint, perspective)));
 	}
 
 	@Test
@@ -324,7 +328,7 @@ public class MenuFileActivityIntegrationTest {
 
 		onView(withText(R.string.dialog_warning_new_image)).check(doesNotExist());
 
-		assertEquals("Bitmap pixel not changed", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint)));
+		assertEquals("Bitmap pixel not changed", Color.BLACK, PaintroidApplication.drawingSurface.getPixel(getCanvasPointFromScreenPoint(screenPoint, perspective)));
 	}
 
 	@Test

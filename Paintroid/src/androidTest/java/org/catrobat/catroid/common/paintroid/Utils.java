@@ -35,10 +35,10 @@ public final class Utils {
 	}
 
 	public static synchronized Point convertFromCanvasToScreen(Point canvasPoint, Perspective currentPerspective) {
-		Float surfaceCenterX = currentPerspective.surfaceCenterX;
+		Float surfaceCenterX = currentPerspective.getSurfaceCenterX();
 		Float surfaceScale = currentPerspective.surfaceScale;
 		Float surfaceTranslationX = currentPerspective.getSurfaceTranslationX();
-		Float surfaceCenterY = currentPerspective.surfaceCenterY;
+		Float surfaceCenterY = currentPerspective.getSurfaceCenterY();
 		Float surfaceTranslationY = currentPerspective.getSurfaceTranslationY();
 
 		Float mInitialTranslationY = currentPerspective.initialTranslationY;
@@ -70,12 +70,10 @@ public final class Utils {
 	}
 
 	public static PointF getSurfacePointFromScreenPoint(PointF screenPoint) {
-
 		return new PointF(screenPoint.x, screenPoint.y - getActionbarHeight() - getStatusbarHeight());
 	}
 
-	public static PointF getCanvasPointFromScreenPoint(PointF screenPoint) {
-		return PaintroidApplication.perspective
-				.getCanvasPointFromSurfacePoint(getSurfacePointFromScreenPoint(screenPoint));
+	public static PointF getCanvasPointFromScreenPoint(PointF screenPoint, Perspective currentPerspective) {
+		return currentPerspective.getCanvasPointFromSurfacePoint(getSurfacePointFromScreenPoint(screenPoint));
 	}
 }
