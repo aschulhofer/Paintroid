@@ -25,6 +25,8 @@ apply plugin: 'pmd'
 apply from: 'gradle/adb_tasks.gradle'
 apply from: 'gradle/code_quality_tasks.gradle'
 
+apply from: 'mutation-config.gradle'
+
 def appId = 'org.catrobat.paintroid'
 def appName = '@string/app_name'
 
@@ -69,6 +71,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+
         release {
             minifyEnabled true
             shrinkResources true
