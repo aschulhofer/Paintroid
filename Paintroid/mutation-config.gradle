@@ -1,0 +1,127 @@
+apply plugin: "at.woodstick.pimutdroid"
+
+pimut {
+    pitest {
+        failWhenNoMutations = false
+        exportLineCoverage = true
+        outputFormats = ["XML", "HTML"]
+        timeoutConstInMillis = 15000
+
+        mutators = [
+            "INCREMENTS",
+            "VOID_METHOD_CALLS",
+            "RETURN_VALS",
+            "MATH",
+            "NEGATE_CONDITIONALS",
+            "INVERT_NEGS",
+            "CONDITIONALS_BOUNDARY",
+            "REMOVE_CONDITIONALS"
+        ]
+
+        excludedMethods = ["toString","equals","hashCode"]
+
+        avoidCallsTo = [
+            "java.util.logging",
+            "org.apache.log4j",
+            "org.slf4j",
+            "org.apache.commons.logging",
+            "org.gradle.api.logging",
+            "android.util.Log",
+        ]
+
+        maxMutationsPerClass = 2
+
+        // Targeted local unit tests under src/test/java
+        targetTests = ["org.catrobat.paintroid.test.*"]
+    }
+
+    buildConfiguration {
+        standard {
+            targetMutants = [
+                "org.catrobat.paintroid.*"
+            ]
+        }
+
+        tools {
+            targetMutants = [
+                "org.catrobat.paintroid.tools.*"
+            ]
+            maxMutationsPerClass = 1
+        }
+
+        mainActivity {
+            targetMutants = [
+                "org.catrobat.paintroid.MainActivity"
+            ]
+            maxMutationsPerClass = 1
+        }
+    }
+
+    instrumentationTestOptions {
+        targetMutants = [
+//            "org.catrobat.paintroid.*",
+            "org.catrobat.paintroid.MainActivity",
+            "org.catrobat.paintroid.ui.Perspective",
+            "org.catrobat.paintroid.tools.implementation.DrawTool",
+            "org.catrobat.paintroid.tools.implementation.LineTool",
+        ]
+
+        targetTests {
+            packages = [
+                "org.catrobat.paintroid.test.junit"
+            ]
+
+//            classes = [
+//                "org.catrobat.paintroid.test.espresso.MainActivityIntegrationTest",
+//                "org.catrobat.paintroid.test.espresso.ActivityOpenedFromPocketCodeNewImageTest",
+//                "org.catrobat.paintroid.test.espresso.ActivityOpenedFromPocketCodeTest",
+//                "org.catrobat.paintroid.test.espresso.NavigationDrawerTest",
+//            ]
+        }
+    }
+
+    ignoreKilledByUnitTest = true
+}
+
+def usesRobolectric = false
+
+if(usesRobolectric) {
+    // Fix for robolectric manifest not found on pitest tasks
+    android.applicationVariants.all { variant ->
+        logger.debug variant.name.capitalize()
+
+        def variantMatcher = (variant.name =~ /([A-Z]?[^A-Z]*)/)
+        List<String> variantPaths = []
+        while (variantMatcher.find()) {
+            variantPaths.add(variantMatcher.group().toLowerCase())
+        }
+        def variantPath = variantPaths.join("/")
+
+        def taskName = "copyRobolectricResourcesForPitest${variant.name.capitalize()}"
+
+        def sourceFile = "${projectDir}/src/robolectric/resources/robolectric.properties"
+        def targetPath = "${buildDir}/intermediates/sourceFolderJavaResources/test/${variantPath}"
+
+        logger.debug "Add ${taskName} to copy robolectric.properties from ($sourceFile) into $targetPath"
+
+        project.task([type: Copy, group: 'build'], taskName) {
+            from sourceFile
+            into targetPath
+        }
+    }
+
+    project.afterEvaluate {
+        logger.debug "Project: ${project.name} evaluated"
+
+        project.getTasks().each { Task task ->
+            if (task.getName().startsWith("pitest") && task.getName() != "pitest") {
+                logger.debug "Task: ${task.name}"
+
+                def variant = task.getName().replace("pitest", "")
+                logger.debug "Variant: $variant"
+
+                task.dependsOn project.tasks.getByName("copyRobolectricResourcesForPitest$variant")
+            }
+        }
+    }
+}
