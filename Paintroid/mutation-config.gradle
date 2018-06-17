@@ -29,7 +29,7 @@ pimut {
             "android.util.Log",
         ]
 
-        maxMutationsPerClass = 1
+        maxMutationsPerClass = 4
 
         // Targeted local unit tests under src/test/java
         targetTests = ["org.catrobat.paintroid.test.*"]
