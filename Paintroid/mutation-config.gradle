@@ -9,7 +9,7 @@ pimut {
 
         mutators = [
             "INCREMENTS",
-            "VOID_METHOD_CALLS",
+//            "VOID_METHOD_CALLS",
             "RETURN_VALS",
             "MATH",
             "NEGATE_CONDITIONALS",
@@ -29,7 +29,7 @@ pimut {
             "android.util.Log",
         ]
 
-        maxMutationsPerClass = 2
+        maxMutationsPerClass = 1
 
         // Targeted local unit tests under src/test/java
         targetTests = ["org.catrobat.paintroid.test.*"]
@@ -67,11 +67,11 @@ pimut {
 
     instrumentationTestOptions {
         targetMutants = [
-//            "org.catrobat.paintroid.*",
-            "org.catrobat.paintroid.MainActivity",
-            "org.catrobat.paintroid.ui.Perspective",
-            "org.catrobat.paintroid.tools.implementation.DrawTool",
-            "org.catrobat.paintroid.tools.implementation.LineTool",
+            "org.catrobat.paintroid.*",
+//            "org.catrobat.paintroid.MainActivity",
+//            "org.catrobat.paintroid.ui.Perspective",
+//            "org.catrobat.paintroid.tools.implementation.DrawTool",
+//            "org.catrobat.paintroid.tools.implementation.LineTool",
         ]
 
         targetTests {
