@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import subprocess
+
+os.environ['SCRIPT_DIR'] = os.path.dirname(os.path.realpath(__file__))
+os.environ['REPO_DIR'] = os.path.realpath(os.path.join(os.environ['SCRIPT_DIR'], ".."))
+
+import build_helper_functions
+
+def usage():
+    print(sys.argv[0] + """ <class_or_package>
+
+This scripts runs mutation analysis on an emulator. The emulator is configured
+in 'emulator_config.ini'. Runs Gradle task 'generateMutationResult'.
+
+The environment variable ANDROID_SDK_ROOT needs to be set.
+
+Be aware that Jenkins cleans the workspace before every build, this can
+be partly replicated by './gradlew clean'.""")
+
+build_helper_functions.check_number_of_parameters(valid_param_count=0, usage_func=usage)
+
+build_helper_functions.bring_emulator_in_running_state()
+
+## RUN mutation analysis - Gradle 'generateMutationResult' task
+test_runner_cmd = build_helper_functions.get_jenkins_android_helper_executable('jenkins_android_cmd_wrapper') + [ '-I', build_helper_functions.get_relative_gradle_name(), 'clean', 'adbDisableAnimationsGlobally', 'generateMutationResult', 'adbResetAnimationsGlobally', '-Pjenkins' ]
+
+print("Calling: " + " ".join(test_runner_cmd))
+return_code = subprocess.run( test_runner_cmd, cwd=os.environ['REPO_DIR'] ).returncode
+sys.exit(return_code)

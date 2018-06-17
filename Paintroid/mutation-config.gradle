@@ -35,6 +35,14 @@ pimut {
         targetTests = ["org.catrobat.paintroid.test.*"]
     }
 
+    ignoreKilledByUnitTest = true
+
+//    devices {
+//        serialNumbers = ["emulator-5554", "emulator-5555"]
+//        parallelExecution = true
+//        ignoreAndroidSerial = true
+//    }
+
     buildConfiguration {
         standard {
             targetMutants = [
@@ -80,7 +88,6 @@ pimut {
         }
     }
 
-    ignoreKilledByUnitTest = true
 }
 
 def usesRobolectric = false
