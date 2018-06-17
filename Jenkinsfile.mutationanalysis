@@ -63,9 +63,6 @@ pipeline {
 			steps {
 				// Run mutation analysis
 				sh "./buildScripts/build_step_run_mutation_analysis_on_emulator"
-
-				// Zip pitest report files
-				zip zipFile: "${env.GRADLE_REPORT_DIR}/pitest/pitest.zip", archive: false, dir: "${env.GRADLE_REPORT_DIR}/pitest/debug"
 			}
 
 			post {
@@ -74,7 +71,7 @@ pipeline {
 					sh "./buildScripts/build_helper_stop_emulator"
 				}
 				success {
-					archiveArtifacts artifacts: "${env.GRADLE_REPORT_DIR}/mutation/*.xml,${env.GRADLE_REPORT_DIR}/pitest/pitest.zip"
+					archiveArtifacts artifacts: "${env.GRADLE_REPORT_DIR}/mutation/*.xml"
 				}
 			}
 		}
