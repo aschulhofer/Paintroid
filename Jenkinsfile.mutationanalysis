@@ -31,15 +31,8 @@ pipeline {
 		// modulename
 		GRADLE_PROJECT_MODULE_NAME = "Paintroid"
 
-		// APK build output locations
-		APK_LOCATION_DEBUG = "${env.GRADLE_PROJECT_MODULE_NAME}/build/outputs/apk/debug/Paintroid-debug.apk"
-
 		// Gradle Report Dir
 		GRADLE_REPORT_DIR = "${env.GRADLE_PROJECT_MODULE_NAME}/build/reports"
-
-		// share.catrob.at
-		CATROBAT_SHARE_UPLOAD_BRANCH = "develop"
-		CATROBAT_SHARE_APK_NAME = "org.catrobat.paintroid_debug_${env.CATROBAT_SHARE_UPLOAD_BRANCH}_latest.apk"
 
 		// set to any value to debug jenkins_android* scripts
 		ANDROID_EMULATOR_HELPER_DEBUG = ""
@@ -70,12 +63,18 @@ pipeline {
 			steps {
 				// Run mutation analysis
 				sh "./buildScripts/build_step_run_mutation_analysis_on_emulator"
+
+				// Zip pitest report files
+				zip zipFile: "${env.GRADLE_REPORT_DIR}/pitest/pitest.zip", archive: false, dir: "${env.GRADLE_REPORT_DIR}/pitest/debug"
 			}
 
 			post {
 				always {
 					// stop/kill emulator
 					sh "./buildScripts/build_helper_stop_emulator"
+				}
+				success {
+					archiveArtifacts artifacts: "${env.GRADLE_REPORT_DIR}/mutation/*.xml,${env.GRADLE_REPORT_DIR}/pitest/pitest.zip"
 				}
 			}
 		}
