@@ -11,7 +11,7 @@ pimut {
             "INCREMENTS",
 //            "VOID_METHOD_CALLS",
             "RETURN_VALS",
-            "MATH",
+//            "MATH",
             "NEGATE_CONDITIONALS",
             "INVERT_NEGS",
             "CONDITIONALS_BOUNDARY",
@@ -29,7 +29,7 @@ pimut {
             "android.util.Log",
         ]
 
-        maxMutationsPerClass = 4
+        maxMutationsPerClass = 5
 
         // Targeted local unit tests under src/test/java
         targetTests = ["org.catrobat.paintroid.test.*"]
