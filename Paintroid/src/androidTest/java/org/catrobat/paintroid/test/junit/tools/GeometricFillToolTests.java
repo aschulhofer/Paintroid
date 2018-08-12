@@ -32,7 +32,9 @@ import org.catrobat.paintroid.tools.ToolType;
 import org.catrobat.paintroid.tools.implementation.BaseTool;
 import org.catrobat.paintroid.tools.implementation.GeometricFillTool;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +52,14 @@ public class GeometricFillToolTests {
 	private GeometricFillTool heartShapeTool;
 	private GeometricFillTool starShapeTool;
 
+	private static Bitmap drawingSurfaceBitmap;
+
 	@UiThreadTest
 	@Before
 	public void setUp() {
+		PaintroidApplication.drawingSurface.setBitmap(drawingSurfaceBitmap);
+		BaseTool.reset();
+
 		rectangleShapeTool = new GeometricFillTool(activityTestRule.getActivity(), ToolType.SHAPE);
 		rectangleShapeTool.baseShape = GeometricFillTool.BaseShape.RECTANGLE;
 		ovalShapeTool = new GeometricFillTool(activityTestRule.getActivity(), ToolType.SHAPE);
@@ -63,11 +70,15 @@ public class GeometricFillToolTests {
 		starShapeTool.baseShape = GeometricFillTool.BaseShape.STAR;
 	}
 
-	@UiThreadTest
-	@After
-	public void tearDown() {
-		PaintroidApplication.drawingSurface.setBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8));
-		BaseTool.reset();
+	@BeforeClass
+	public static void setUpClass() {
+		drawingSurfaceBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+	}
+
+	@AfterClass
+	public static void tearDown() {
+		drawingSurfaceBitmap.recycle();
+		drawingSurfaceBitmap = null;
 	}
 
 	@UiThreadTest

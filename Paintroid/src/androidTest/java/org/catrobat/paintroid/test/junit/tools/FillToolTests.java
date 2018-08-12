@@ -37,7 +37,9 @@ import org.catrobat.paintroid.tools.helper.FillAlgorithm;
 import org.catrobat.paintroid.tools.implementation.BaseTool;
 import org.catrobat.paintroid.tools.implementation.FillTool;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +62,10 @@ public class FillToolTests {
 
 	private FillTool toolToTest;
 
+	private Bitmap bitmap;
+
+	private static Bitmap drawingSurfaceBitmap;
+
 	@UiThreadTest
 	@Before
 	public void setUp() {
@@ -69,8 +75,24 @@ public class FillToolTests {
 	@UiThreadTest
 	@After
 	public void tearDown() {
-		PaintroidApplication.drawingSurface.setBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8));
+		if(bitmap != null) {
+			bitmap.recycle();
+			bitmap = null;
+		}
+
+		PaintroidApplication.drawingSurface.setBitmap(drawingSurfaceBitmap);
 		BaseTool.reset();
+	}
+
+	@BeforeClass
+	public static void setUpClass() {
+		drawingSurfaceBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		drawingSurfaceBitmap.recycle();
+		drawingSurfaceBitmap = null;
 	}
 
 	@UiThreadTest
@@ -85,7 +107,7 @@ public class FillToolTests {
 	public void testFillToolAlgorithmMembers() {
 		int width = 10;
 		int height = 20;
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Point clickedPixel = new Point(width / 2, height / 2);
 		int targetColor = 16777215;
 		int replacementColor = 0;
@@ -115,7 +137,7 @@ public class FillToolTests {
 	public void testFillingOnEmptyBitmap() {
 		int width = 10;
 		int height = 20;
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(Color.WHITE);
 		Point clickedPixel = new Point(width / 2, height / 2);
@@ -144,7 +166,7 @@ public class FillToolTests {
 		Point clickedPixel = new Point(width / 2, height / 2);
 		int targetColor = Color.GREEN;
 		int boundaryColor = Color.RED;
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 
 		Paint paint = new Paint();
@@ -185,7 +207,7 @@ public class FillToolTests {
 		int replacementColor = 0;
 		int maxTolerancePerChannel = 0xFF;
 		int boundaryColor = Color.argb(maxTolerancePerChannel, maxTolerancePerChannel, maxTolerancePerChannel, maxTolerancePerChannel);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(replacementColor);
 		Paint paint = new Paint();
@@ -218,7 +240,7 @@ public class FillToolTests {
 		int replacementColor = 0;
 		int maxTolerancePerChannel = 0xFF;
 		int boundaryColor = Color.argb(maxTolerancePerChannel, maxTolerancePerChannel, maxTolerancePerChannel, maxTolerancePerChannel);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(replacementColor);
 		Paint paint = new Paint();
@@ -252,7 +274,7 @@ public class FillToolTests {
 		int height = 8;
 		Point clickedPixel = new Point(width / 2, height / 2);
 		Point boundaryPixel = new Point(width / 4, height / 4);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		int targetColor = 0;
 		int boundaryColor = Color.argb(0xFF, 0xFF, 0xFF, 0xFF);
@@ -290,7 +312,7 @@ public class FillToolTests {
 		int width = 8;
 
 		Point topLeftQuarterPixel = new Point(width / 4, height / 4);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(replacementColor);
 		Paint paint = new Paint();
@@ -329,7 +351,7 @@ public class FillToolTests {
 		int height = pixels.length;
 		int width = pixels[0].length;
 		Point clickedPixel = new Point(1, 1);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(replacementColor);
 		Paint paint = new Paint();
@@ -375,7 +397,13 @@ public class FillToolTests {
 
 		for (Point clickedPixel : clickedPixels) {
 			pixels = createPixelArrayForComplexTest(replacementColor, boundaryColor);
-			Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+			if(bitmap != null) {
+				bitmap.recycle();
+				bitmap = null;
+			}
+
+			bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 			Layer layer = new Layer(0, bitmap);
 			bitmap.eraseColor(replacementColor);
 			putPixelsToBitmap(bitmap, pixels);
@@ -409,7 +437,7 @@ public class FillToolTests {
 		int width = pixels[0].length;
 
 		pixels = createPixelArrayForSkipPixelTest(replacementColor, boundaryColor);
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Layer layer = new Layer(0, bitmap);
 		bitmap.eraseColor(replacementColor);
 		putPixelsToBitmap(bitmap, pixels);

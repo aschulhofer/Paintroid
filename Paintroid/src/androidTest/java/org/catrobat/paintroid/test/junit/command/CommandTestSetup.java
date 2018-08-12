@@ -29,6 +29,7 @@ import android.graphics.PointF;
 
 import org.catrobat.paintroid.command.Command;
 import org.catrobat.paintroid.tools.Layer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,6 +62,14 @@ public abstract class CommandTestSetup {
 		paintUnderTest.setStyle(Paint.Style.STROKE);
 		paintUnderTest.setStrokeCap(Cap.BUTT);
 		pointUnderTest = new PointF(canvasBitmapUnderTest.getWidth() / 2, canvasBitmapUnderTest.getHeight() / 2);
+	}
+
+	@After
+	public void tearDown() {
+		canvasBitmapUnderTest.recycle();
+		canvasBitmapUnderTest = null;
+		bitmapUnderTest.recycle();
+		bitmapUnderTest = null;
 	}
 
 	@Test

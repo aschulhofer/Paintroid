@@ -28,6 +28,7 @@ import org.catrobat.paintroid.command.implementation.BaseCommand;
 import org.catrobat.paintroid.command.implementation.StampCommand;
 import org.catrobat.paintroid.test.utils.PaintroidAsserts;
 import org.catrobat.paintroid.tools.Layer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +49,12 @@ public class StampCommandTest extends CommandTestSetup {
 				canvasBitmapUnderTest.getHeight() / 2), canvasBitmapUnderTest.getWidth(),
 				canvasBitmapUnderTest.getHeight(), 0);
 		commandUnderTestNull = new StampCommand(null, null, 0, 0, 0);
+	}
+
+	@After
+	public void tearDown() {
+		stampBitmapUnderTest.recycle();
+		stampBitmapUnderTest = null;
 	}
 
 	@Test

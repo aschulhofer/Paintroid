@@ -22,7 +22,6 @@ buildscript {
     repositories {
         jcenter()
         google()
-//        mavenLocal()
     }
 
     configurations.maybeCreate("pitest")
@@ -30,9 +29,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
-
-//        classpath group: "at.woodstick", name: "gradle-pimutdroid-plugin", version: "0.0.1"
-//        pitest group: "org.pitest.plugins", name: "pitest-export-plugin", version: "0.1-SNAPSHOT"
 
         classpath group: "com.fasterxml.jackson.dataformat", name: "jackson-dataformat-xml", version: "2.9.2"
         classpath group: "pl.droidsonroids.gradle", name: "gradle-pitest-plugin", version: "0.1.5"

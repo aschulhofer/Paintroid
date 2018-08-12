@@ -9,13 +9,12 @@ pimut {
 
         mutators = [
             "INCREMENTS",
-//            "VOID_METHOD_CALLS",
             "RETURN_VALS",
-//            "MATH",
             "NEGATE_CONDITIONALS",
             "INVERT_NEGS",
             "CONDITIONALS_BOUNDARY",
-            "REMOVE_CONDITIONALS"
+//            "MATH",
+//            "VOID_METHOD_CALLS",
         ]
 
         excludedMethods = ["toString","equals","hashCode"]
@@ -29,7 +28,7 @@ pimut {
             "android.util.Log",
         ]
 
-        maxMutationsPerClass = 5
+//        maxMutationsPerClass = 10
 
         // Targeted local unit tests under src/test/java
         targetTests = ["org.catrobat.paintroid.test.*"]
@@ -37,46 +36,91 @@ pimut {
 
     ignoreKilledByUnitTest = true
 
-//    devices {
+    devices {
 //        serialNumbers = ["emulator-5554", "emulator-5555"]
-//        parallelExecution = true
-//        ignoreAndroidSerial = true
-//    }
+        parallelExecution = true
+        ignoreAndroidSerial = true
+    }
 
     buildConfiguration {
-        standard {
+
+
+        cmdMan {
             targetMutants = [
-                "org.catrobat.paintroid.*"
+//                    "org.catrobat.paintroid.FileIO",
+                    "org.catrobat.paintroid.intro.*",
+//                    "org.catrobat.paintroid.command.*",
+//                    "!org.catrobat.paintroid.command.implementation.*",
+//                    "!org.catrobat.paintroid.command.implementation.UndoRedoManager",
+//                    "!org.catrobat.paintroid.command.implementation.CommandManagerImplementation",
+//                    "!org.catrobat.paintroid.command.implementation.BaseCommand",
+//                    "!org.catrobat.paintroid.command.implementation.FillCommand",
+//                    "!org.catrobat.paintroid.command.implementation.FlipCommand",
+//                    "!org.catrobat.paintroid.command.implementation.LayerBitmapCommandImpl",
+//                    "!org.catrobat.paintroid.command.implementation.LayerCommand",
+//                    "!org.catrobat.paintroid.command.implementation.PathCommand",
+//                    "!org.catrobat.paintroid.command.implementation.TextToolCommand",
+//                    "!org.catrobat.paintroid.command.implementation.GeometricFillCommand",
+//                    "!org.catrobat.paintroid.command.implementation.PointCommand",
+//                    "!org.catrobat.paintroid.command.implementation.ResizeCommand",
+//                    "!org.catrobat.paintroid.command.implementation.RotateCommand",
+//                    "!org.catrobat.paintroid.command.implementation.StampCommand",
+
             ]
         }
 
-        tools {
-            targetMutants = [
-                "org.catrobat.paintroid.tools.*"
-            ]
-            maxMutationsPerClass = 1
-        }
+//        commandsMath {
+//            targetMutants = [
+//                "org.catrobat.paintroid.command.*",
+//                "!org.catrobat.paintroid.command.implementation.*",
+//            ]
+//            mutators = [
+//                "MATH"
+//            ]
+//        }
 
-        mainActivity {
-            targetMutants = [
-                "org.catrobat.paintroid.MainActivity"
-            ]
-            maxMutationsPerClass = 1
-        }
+//        standard {
+//            targetMutants = [
+//                "org.catrobat.paintroid.*"
+//            ]
+//            mutators = [
+//                "INCREMENTS",
+//                "RETURN_VALS",
+//                "NEGATE_CONDITIONALS",
+//                "INVERT_NEGS",
+//                "CONDITIONALS_BOUNDARY",
+//            ]
+//        }
+
+//        math {
+//            targetMutants = [
+//                "org.catrobat.paintroid.*"
+//            ]
+//            mutators = [
+//                "MATH"
+//            ]
+//        }
+//
+//        voidCalls {
+//            targetMutants = [
+//                    "org.catrobat.paintroid.*"
+//            ]
+//            mutators = [
+//                    "VOID_METHOD_CALLS"
+//            ]
+//        }
+
     }
 
     instrumentationTestOptions {
         targetMutants = [
             "org.catrobat.paintroid.*",
-//            "org.catrobat.paintroid.MainActivity",
-//            "org.catrobat.paintroid.ui.Perspective",
-//            "org.catrobat.paintroid.tools.implementation.DrawTool",
-//            "org.catrobat.paintroid.tools.implementation.LineTool",
         ]
 
         targetTests {
             packages = [
                 "org.catrobat.paintroid.test.junit"
+//                "org.catrobat.paintroid.test.junit.command"
             ]
 
 //            classes = [
@@ -87,7 +131,6 @@ pimut {
 //            ]
         }
     }
-
 }
 
 def usesRobolectric = false

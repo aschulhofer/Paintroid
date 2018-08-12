@@ -35,7 +35,9 @@ import org.catrobat.paintroid.tools.ToolType;
 import org.catrobat.paintroid.tools.implementation.BaseTool;
 import org.catrobat.paintroid.tools.implementation.BaseToolWithRectangleShape;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +63,8 @@ public class BaseToolWithRectangleShapeToolTest {
 	private float rotation;
 	private float symbolDistance;
 
+	private static Bitmap drawingSurfaceBitmap;
+
 	@UiThreadTest
 	@Before
 	public void setUp() {
@@ -80,9 +84,20 @@ public class BaseToolWithRectangleShapeToolTest {
 	@UiThreadTest
 	@After
 	public void tearDown() {
-		PaintroidApplication.drawingSurface.setBitmap(Bitmap.createBitmap(1, 1, Config.ALPHA_8));
-		BaseTool.reset();
+        PaintroidApplication.drawingSurface.setBitmap(drawingSurfaceBitmap);
+        BaseTool.reset();
 	}
+
+	@BeforeClass
+	public static void setUpClass() {
+		drawingSurfaceBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+	}
+
+	@AfterClass
+    public static void tearDownClass() {
+        drawingSurfaceBitmap.recycle();
+        drawingSurfaceBitmap = null;
+    }
 
 	@UiThreadTest
 	@Test

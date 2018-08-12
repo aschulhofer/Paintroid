@@ -29,6 +29,7 @@ import org.catrobat.paintroid.PaintroidApplication;
 import org.catrobat.paintroid.tools.ToolType;
 import org.catrobat.paintroid.tools.implementation.ImportTool;
 import org.catrobat.paintroid.ui.DrawingSurface;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +48,8 @@ public class ImportToolTest {
 
 	private ImportTool tool;
 
+	private Bitmap bitmap;
+
 	@UiThreadTest
 	@Before
 	public void setUp() {
@@ -57,12 +60,20 @@ public class ImportToolTest {
 		drawingSurfaceHeight = drawingSurface.getBitmapHeight();
 	}
 
+	@After
+	public void tearDown() {
+		if(bitmap != null) {
+			bitmap.recycle();
+			bitmap = null;
+		}
+	}
+
 	@Test
 	public void testImport() {
 		final int width = drawingSurfaceWidth;
 		final int height = drawingSurfaceHeight;
 
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		tool.setBitmapFromFile(bitmap);
 
 		assertEquals(width, tool.boxWidth, Float.MIN_VALUE);
@@ -75,7 +86,7 @@ public class ImportToolTest {
 		final int height = 1;
 		final int minSize = ImportTool.DEFAULT_BOX_RESIZE_MARGIN;
 
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		tool.setBitmapFromFile(bitmap);
 
 		assertEquals(minSize, tool.boxWidth, Float.MIN_VALUE);
@@ -87,7 +98,7 @@ public class ImportToolTest {
 		final int width = (int) (drawingSurfaceWidth * ImportTool.MAXIMUM_BORDER_RATIO);
 		final int height = (int) (drawingSurfaceHeight * ImportTool.MAXIMUM_BORDER_RATIO);
 
-		Bitmap bitmap = Bitmap.createBitmap(width + 1, height + 1, Bitmap.Config.ARGB_8888);
+		bitmap = Bitmap.createBitmap(width + 1, height + 1, Bitmap.Config.ARGB_8888);
 		tool.setBitmapFromFile(bitmap);
 
 		assertEquals(width, tool.boxWidth, Float.MIN_VALUE);

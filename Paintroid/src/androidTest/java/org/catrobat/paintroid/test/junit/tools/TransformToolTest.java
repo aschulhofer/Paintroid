@@ -24,15 +24,30 @@ import android.graphics.Color;
 import android.graphics.Rect;
 
 import org.catrobat.paintroid.tools.implementation.TransformTool;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class TransformToolTest {
+
+	private Bitmap bitmap;
+
+	@Before
+	public void setUp() {
+		bitmap = Bitmap.createBitmap(3, 3, Bitmap.Config.ARGB_8888);
+	}
+
+	@After
+	public void tearDown() {
+		bitmap.recycle();
+		bitmap = null;
+	}
+
 	@Test
 	public void testCropAlgorithmSnail() {
-		Bitmap bitmap = Bitmap.createBitmap(3, 3, Bitmap.Config.ARGB_8888);
 		bitmap.setPixel(1, 1, Color.BLACK);
 		Rect expectedBounds = new Rect(1, 1, 1, 1);
 		Rect bounds = TransformTool.cropAlgorithmSnail(bitmap);
@@ -47,14 +62,12 @@ public class TransformToolTest {
 
 	@Test
 	public void testCropAlgorithmSnailWithEmptyBitmap() {
-		Bitmap bitmap = Bitmap.createBitmap(3, 3, Bitmap.Config.ARGB_8888);
 		Rect bounds = TransformTool.cropAlgorithmSnail(bitmap);
 		assertNull(bounds);
 	}
 
 	@Test
 	public void testCropAlgorithmSnailWithFilledBitmap() {
-		Bitmap bitmap = Bitmap.createBitmap(3, 3, Bitmap.Config.ARGB_8888);
 		bitmap.eraseColor(Color.BLACK);
 		Rect expectedBounds = new Rect(0, 0, 2, 2);
 		Rect bounds = TransformTool.cropAlgorithmSnail(bitmap);
